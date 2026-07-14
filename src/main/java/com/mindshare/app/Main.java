@@ -10,6 +10,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+       com.mindshare.database.SQLiteConnection.initializeSchema();
+       // The initialization call could be through an import at the top outside the method.
+
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/com/mindshare/auth/WelcomeView.fxml"));
         Parent root = loader.load();
