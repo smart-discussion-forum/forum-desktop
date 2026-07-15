@@ -30,7 +30,16 @@ public class DashboardController {
 
         @FXML
         private void handleDiscussions(ActionEvent event) {
-            System.out.println("Discussions clicked - screen not built yet");
+                try {
+                        javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                                getClass().getResource("/com/mindshare/group/MyGroupsView.fxml"));
+                        javafx.scene.Parent groupsRoot = loader.load();
+                        javafx.stage.Stage stage = (javafx.stage.Stage) discussionButton.getScene().getWindow();
+                        stage.setScene(new javafx.scene.Scene(groupsRoot, 600, 420));
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+
         }
 
         @FXML
