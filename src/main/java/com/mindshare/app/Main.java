@@ -13,6 +13,9 @@ public class Main extends Application {
        com.mindshare.database.SQLiteConnection.initializeSchema();
        // The initialization call could be through an import at the top outside the method.
 
+        boolean online = com.mindshare.sync.NetworkMonitor.isServerReachable();
+        System.out.println("Server reachable: " + online);
+
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/com/mindshare/auth/WelcomeView.fxml"));
         Parent root = loader.load();
@@ -20,6 +23,8 @@ public class Main extends Application {
         primaryStage.setTitle("MindShare Discussion Forum");
         primaryStage.setScene(new Scene(root, 600, 420));
         primaryStage.show();
+
+
     }
 
     public static void main(String[] args) {
