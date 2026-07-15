@@ -52,7 +52,14 @@ public class LoginController{
                 UserSession.set(token, userName, userRole);
 
                 System.out.println("Login successful. Token stored for: " + userName);
-// Next is navigating to the Dashboard screen from here.
+
+                java.net.URL dashboardUrl = getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml");
+
+                //Navigating to the dashboard screen
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(dashboardUrl);
+                javafx.scene.Parent dashboardRoot = loader.load();
+                javafx.stage.Stage stage = (javafx.stage.Stage) loginButton.getScene().getWindow();
+                stage.setScene(new javafx.scene.Scene(dashboardRoot, 600, 420));
 
             } else {
                 String message = response.has("message") ? response.get("message").asText() : "Login failed.";

@@ -27,10 +27,12 @@ public class AuthService {
 
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost request = new HttpPost(BASE_URL +"/login");
+            request.setHeader("Accept", "application/json");
             request.setEntity(new StringEntity(requestBody, ContentType.APPLICATION_JSON));
 
             try (CloseableHttpResponse response = client.execute(request)) {
                 String responseBody = new String(response.getEntity().getContent().readAllBytes());
+                System.out.println("Raw HTTP response: " + responseBody);
                 return objectMapper.readTree(responseBody);
             }
 
