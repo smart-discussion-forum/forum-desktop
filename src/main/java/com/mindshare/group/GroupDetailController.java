@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import com.mindshare.api.TopicService;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class GroupDetailController {
     public void setGroup(Group group) {
         this.currentGroup = group;
         groupNameLabel.setText(group.getName());
-        loadPlaceholderTopics();
+        loadTopics();
 
         topicListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -59,20 +60,32 @@ public class GroupDetailController {
             controller.setTopic(topic);
 
             Stage stage = (Stage) topicListView.getScene().getWindow();
-            stage.setScene(new Scene(topicDetailRoot, 600, 420));
+            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(topicDetailRoot, 600, 420));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-        private void loadPlaceholderTopics() {
-        // TODO: replace with a real API call once /api/groups/{id}/topics exists
-        List<Topic> placeholderTopics = List.of(
-                new Topic(1, "Assignment 2 clarification", "Coursework"),
-                new Topic(2, "Best resources for OOP revision", "General"),
-                new Topic(3, "Project deadline reminder", "Announcements")
-        );
-        topicListView.setItems(FXCollections.observableArrayList(placeholderTopics));
+    private final TopicService topicService = new TopicService();
+
+    private void loadTopics() {
+        javafx.concurrent.Task<List<Topic>> fetchTask = new javafx.concurrent.Task<>() {
+            @Override
+            protected List<Topic> call() throws Exception {
+                return topicService.fetchTopics(currentGroup.getId());
+            }
+        };
+
+        fetchTask.setOnSucceeded(event -> {
+            topicListView.setItems(FXCollections.observableArrayList(fetchTask.getValue()));
+        });
+
+        fetchTask.setOnFailed(event -> {
+            fetchTask.getException().printStackTrace();
+            // TODO: show a status label like MyGroupsController does
+        });
+
+        new Thread(fetchTask).start();
     }
 
     @FXML
@@ -92,7 +105,7 @@ public class GroupDetailController {
                     getClass().getResource("/com/mindshare/group/MyGroupsView.fxml"));
             Parent groupsRoot = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(new Scene(groupsRoot, 600, 420));
+            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(groupsRoot, 600, 420));
         }
         catch (Exception e) {
             e.printStackTrace();

@@ -1,5 +1,6 @@
 package com.mindshare.discussion.controller;
 
+import com.mindshare.discussion.ExportDiscussionController;
 import com.mindshare.discussion.model.Post;
 import com.mindshare.discussion.model.Topic;
 import javafx.collections.FXCollections;
@@ -34,6 +35,9 @@ public class TopicDetailController {
 
     @FXML
     private Button backButton;
+
+    @FXML
+    private Button exportButton;
 
     private Topic currentTopic;
 
@@ -84,9 +88,25 @@ public class TopicDetailController {
                     getClass().getResource("/com/mindshare/group/GroupDetailView.fxml"));
             Parent groupDetailRoot = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(new Scene(groupDetailRoot, 600, 420));
+            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(groupDetailRoot, 600, 420));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void handleExport(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/discussion/ExportDiscussionView.fxml"));
+            Parent root = loader.load();
+            ExportDiscussionController controller = loader.getController();
+            controller.setDiscussion(currentTopic, postsListView.getItems());
+            Stage stage = (Stage) exportButton.getScene().getWindow();
+            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 }
+

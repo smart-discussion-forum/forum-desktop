@@ -12,6 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
        com.mindshare.database.SQLiteConnection.initializeSchema();
        // The initialization call could be through an import at the top outside the method.
+        com.mindshare.sync.NetworkMonitor.refreshStatus();
 
         boolean online = com.mindshare.sync.NetworkMonitor.isServerReachable();
         System.out.println("Server reachable: " + online);
@@ -21,7 +22,7 @@ public class Main extends Application {
         Parent root = loader.load();
 
         primaryStage.setTitle("MindShare Discussion Forum");
-        primaryStage.setScene(new Scene(root, 600, 420));
+        primaryStage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
         primaryStage.show();
 
 

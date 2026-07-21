@@ -1,0 +1,30 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom right, #0b1020, #1a2338, #2e3a56);
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.label {
+    -fx-text-fill: #f8fbff;
+}
+
+.button {
+    -fx-background-color: linear-gradient(to bottom right, #4f7ca8, #2f5f84);
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 8 20 8 20;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #5b8ab5, #3a6d94);
+}
+
+.text-field, .password-field, .text-area {
+    -fx-background-radius: 12;
+    -fx-padding: 8;
+}
+
+.list-view {
+    -fx-background-radius: 16;
+    -fx-background-color: rgba(255,255,255,0.9);
+}

@@ -24,6 +24,7 @@
     <HBox spacing="10" alignment="CENTER">
         <Button fx:id="sendButton" text="Send" onAction="#handleSend"/>
         <Button fx:id="refreshButton" text="Refresh" onAction="#handleRefresh"/>
+        <Button fx:id="exportButton" text="Export Discussion" onAction="#handleExport"/>
     </HBox>
 
     <Button fx:id="backButton" text="Back to Topics" onAction="#handleBack"/>

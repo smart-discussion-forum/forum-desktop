@@ -59,7 +59,7 @@ public class MyGroupsController {
             controller.setGroup(group);
 
             Stage stage = (Stage) groupListView.getScene().getWindow();
-            stage.setScene(new Scene(groupDetailRoot, 600, 420));
+            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(groupDetailRoot, 600, 420));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,7 +94,7 @@ public class MyGroupsController {
                     getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml"));
             Parent dashboardRoot = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(new Scene(dashboardRoot, 600, 420));
+            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(dashboardRoot, 600, 420));
         } catch (Exception e) {
             e.printStackTrace();
         }
