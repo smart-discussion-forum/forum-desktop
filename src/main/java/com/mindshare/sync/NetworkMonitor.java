@@ -26,8 +26,18 @@ public class NetworkMonitor {
                 return true; // any response at all means the server is reachable
             }
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return false; // connection refused, timeout, unknown host, etc.
         }
+    }
+    private static boolean lastKnownOnlineStatus = false;
+
+    public static void refreshStatus() {
+        lastKnownOnlineStatus = isServerReachable();
+    }
+
+    public static boolean isOnline() {
+        return lastKnownOnlineStatus;
     }
 }
