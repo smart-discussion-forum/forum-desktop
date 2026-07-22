@@ -15,7 +15,7 @@
         <Insets top="30" right="30" bottom="30" left="30"/>
     </padding>
 
-    <Label fx:id="topicTitleLabel" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+    <Label fx:id="topicTitleLabel" styleClass="screen-title"/>
 
     <ListView fx:id="postsListView" prefWidth="450" prefHeight="220"/>
 

@@ -1,5 +1,8 @@
 package com.mindshare.group;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Group {
     private int id;
     private String name;

@@ -14,6 +14,10 @@ public class Quiz {
     public String getTitle() { return title; }
     public int getDurationMinutes() { return durationMinutes; }
 
+    public boolean hasDuration() {
+        return durationMinutes > 0;
+    }
+
     @Override
     public String toString() { return title; }
 }

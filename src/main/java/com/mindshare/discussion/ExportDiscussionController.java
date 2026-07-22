@@ -12,8 +12,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.util.List;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 public class ExportDiscussionController {
     @FXML private TextArea summaryArea;
@@ -38,10 +43,25 @@ public class ExportDiscussionController {
 
     @FXML
     private void handleExportPdf(ActionEvent event) {
-        // TODO: replace with proper PDF generation (e.g. using a PDF library) - text file for now to prove the export flow works
-        try (FileWriter writer = new FileWriter(topic.getTitle().replaceAll("[^a-zA-Z0-9]", "_") + "_export.txt")) {
-            writer.write(summaryArea.getText());
-            System.out.println("Exported to text file (placeholder for PDF).");
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.LETTER);
+            document.addPage(page);
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                contentStream.beginText();
+                contentStream.setFont(PDType1Font.HELVETICA, 12);
+                contentStream.newLineAtOffset(40, 700);
+                for (String line : summaryArea.getText().split("\\R")) {
+                    contentStream.showText(line);
+                    contentStream.newLineAtOffset(0, -16);
+                }
+                contentStream.endText();
+            }
+
+            try (FileOutputStream outputStream = new FileOutputStream(topic.getTitle().replaceAll("[^a-zA-Z0-9]", "_") + "_export.pdf")) {
+                document.save(outputStream);
+            }
+            System.out.println("Exported discussion as PDF.");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -59,5 +79,4 @@ public class ExportDiscussionController {
             e.printStackTrace();
         }
     }
-
-    }
+}

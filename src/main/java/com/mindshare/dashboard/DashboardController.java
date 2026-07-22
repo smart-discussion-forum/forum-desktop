@@ -66,15 +66,10 @@ public class DashboardController {
                         String role = UserSession.getUserRole();
                         String fxmlPath = role.equalsIgnoreCase("lecturer")
                                 ? "/com/mindshare/quiz/QuizConfigurationView.fxml"
-                                : "/com/mindshare/quiz/QuizTakingView.fxml";
+                                : "/com/mindshare/quiz/QuizListView.fxml";
 
                         javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource(fxmlPath));
                         javafx.scene.Parent root = loader.load();
-
-                        if (!role.equalsIgnoreCase("lecturer")) {
-                                com.mindshare.quiz.QuizTakingController controller = loader.getController();
-                                controller.setQuiz(new com.mindshare.quiz.Quiz(1, "Sample Quiz - OOP Concepts", 1));
-                        }
 
                         javafx.stage.Stage stage = (javafx.stage.Stage) quizButton.getScene().getWindow();
                         stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));

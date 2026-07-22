@@ -14,7 +14,7 @@ import java.util.List;
 
 public class TopicService {
 
-    private static final String BASE_URL = "http://127.0.0.1:8000/api";
+    private static final String BASE_URL = ApiConfig.getBaseUrl();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

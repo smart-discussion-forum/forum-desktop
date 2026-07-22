@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="15" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.mindshare.quiz.QuizListController">
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <Label text="Available Quizzes" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+    <Label fx:id="statusLabel" style="-fx-font-size: 13px;"/>
+    <ListView fx:id="quizListView" prefHeight="220" prefWidth="420"/>
+    <Button fx:id="openButton" text="Open Quiz" onAction="#handleOpen" prefWidth="180"/>
+    <Button fx:id="backButton" text="Back" onAction="#handleBack" prefWidth="180"/>
+</VBox>
