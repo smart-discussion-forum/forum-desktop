@@ -1,8 +1,12 @@
 package com.mindshare.discussion.controller;
 
 import com.mindshare.discussion.ExportDiscussionController;
+import com.mindshare.api.PostService;
 import com.mindshare.discussion.model.Post;
 import com.mindshare.discussion.model.Topic;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mindshare.auth.model.UserSession;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +19,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TopicDetailController {
@@ -40,21 +45,37 @@ public class TopicDetailController {
     private Button exportButton;
 
     private Topic currentTopic;
+    private final PostService postService = new PostService();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void setTopic(Topic topic) {
         this.currentTopic = topic;
         topicTitleLabel.setText(topic.getTitle());
-        loadPlaceholderPosts();
+        loadPosts();
     }
 
-    private void loadPlaceholderPosts() {
-        // TODO: replace with real API call once /api/topics/{id}/posts exists
-        List<Post> placeholderPosts = List.of(
-                new Post(1, "Joel Agaba", "Has anyone started on part 2 yet?", "2026-07-14 09:15"),
-                new Post(2, "Justine Peace", "Yes, I'm stuck on the migrations part.", "2026-07-14 09:22"),
-                new Post(3, "Pearl Ikiring", "Check the seeder examples in the repo.", "2026-07-14 09:30")
-        );
-        postsListView.setItems(FXCollections.observableArrayList(placeholderPosts));
+    private void loadPosts() {
+        javafx.concurrent.Task<List<Post>> task = new javafx.concurrent.Task<>() {
+            @Override
+            protected List<Post> call() throws Exception {
+                JsonNode response = postService.fetchPosts(currentTopic.getId());
+                JsonNode postsNode = response.isArray() ? response : response.path("posts");
+                List<Post> posts = new ArrayList<>();
+                if (postsNode != null && postsNode.isArray()) {
+                    for (JsonNode node : postsNode) {
+                        String author = node.path("author_name").asText(node.path("author").path("name").asText("Unknown"));
+                        String content = node.path("content").asText(node.path("message").asText(""));
+                        String createdAt = node.path("created_at").asText("");
+                        posts.add(new Post(node.path("id").asInt(), author, content, createdAt));
+                    }
+                }
+                return posts;
+            }
+        };
+
+        task.setOnSucceeded(workerEvent -> postsListView.setItems(FXCollections.observableArrayList(task.getValue())));
+        task.setOnFailed(workerEvent -> task.getException().printStackTrace());
+        new Thread(task).start();
     }
 
     @FXML
@@ -64,21 +85,30 @@ public class TopicDetailController {
             return;
         }
 
-        // TODO: replace with real POST to /api/topics/{id}/posts once available.
-        // For now, just append it locally so the UI feels responsive during testing.
-        Post newPost = new Post(
-                postsListView.getItems().size() + 1,
-                "You",
-                replyText,
-                "Just now"
-        );
-        postsListView.getItems().add(newPost);
-        replyField.clear();
+        javafx.concurrent.Task<Post> task = new javafx.concurrent.Task<>() {
+            @Override
+            protected Post call() throws Exception {
+                JsonNode response = postService.createPost(currentTopic.getId(), replyText);
+                return new Post(
+                        response.path("id").asInt(postsListView.getItems().size() + 1),
+                        response.path("author_name").asText(UserSession.getUserName()),
+                        response.path("content").asText(replyText),
+                        response.path("created_at").asText("Just now")
+                );
+            }
+        };
+
+        task.setOnSucceeded(workerEvent -> {
+            postsListView.getItems().add(task.getValue());
+            replyField.clear();
+        });
+        task.setOnFailed(workerEvent -> task.getException().printStackTrace());
+        new Thread(task).start();
     }
 
     @FXML
     private void handleRefresh(ActionEvent event) {
-        loadPlaceholderPosts();
+        loadPosts();
     }
 
     @FXML

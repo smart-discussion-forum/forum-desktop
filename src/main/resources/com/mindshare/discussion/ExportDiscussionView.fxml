@@ -10,7 +10,7 @@
       fx:controller="com.mindshare.discussion.controller.ExportDiscussionController">
     <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
 
-    <TextArea fx:id="summaryArea" editable="false" wrapText="true" prefWidth="450" prefHeight="300"/>
+    <TextArea fx:id="summaryArea" editable="false" wrapText="true" prefWidth="450" prefHeight="300" style="-fx-text-fill: #101827;"/>
 
     <HBox spacing="10" alignment="CENTER">
         <Button fx:id="exportButton" text="Export PDF" onAction="#handleExportPdf"/>

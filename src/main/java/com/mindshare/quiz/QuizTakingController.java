@@ -41,37 +41,54 @@ public class QuizTakingController {
 
     public void setQuiz(Quiz quiz) {
         this.quiz = quiz;
-        questionLabel.setText("Starting quiz...");
+        if (questionLabel != null) {
+            questionLabel.setText("Starting quiz...");
+        }
         startAttempt();
     }
 
-       private void startAttempt() {
-           Task<JsonNode> task = new Task<>() {
-               @Override
-               protected JsonNode call() throws Exception {
-                   return quizService.startAttempt(quiz.getId());
-               }
-           };
+    private void startAttempt() {
+        Task<JsonNode> task = new Task<>() {
+            @Override
+            protected JsonNode call() throws Exception {
+                return quizService.startAttempt(quiz.getId());
+            }
+        };
 
-           task.setOnSucceeded(e -> {
-               JsonNode result = task.getValue();
-               System.out.println("Raw startAttempt response: " + result);
+        task.setOnSucceeded(e -> {
+            JsonNode result = task.getValue();
+            System.out.println("Raw startAttempt response: " + result);
 
-               if (result.has("attempt") && result.get("attempt").has("Attempt_id")) {
-                   attemptId = result.get("attempt").get("attempt").get("Attempt_id").asInt();
-                   loadQuestions();
-               } else {
-                   questionLabel.setText(result.has("message") ? result.get("message").asText() : "Could not start quiz.");
-               }
-           });
+            JsonNode attemptNode = result.path("attempt");
+            JsonNode attemptIdNode = attemptNode.path("Attempt_id");
+            if (attemptIdNode.isMissingNode() || attemptIdNode.isNull()) {
+                attemptIdNode = attemptNode.path("attempt_id");
+            }
+            if (attemptIdNode.isMissingNode() || attemptIdNode.isNull()) {
+                attemptIdNode = attemptNode.path("id");
+            }
+            if (attemptIdNode.isMissingNode() || attemptIdNode.isNull()) {
+                attemptIdNode = result.path("Attempt_id");
+            }
+            if (attemptIdNode.isMissingNode() || attemptIdNode.isNull()) {
+                attemptIdNode = result.path("attempt_id");
+            }
 
-           task.setOnFailed(e -> {
-               task.getException().printStackTrace();
-               questionLabel.setText("Error starting quiz attempt.");
-           });
+            if (!attemptIdNode.isMissingNode() && !attemptIdNode.isNull()) {
+                attemptId = attemptIdNode.asInt();
+                loadQuestions();
+            } else {
+                questionLabel.setText(result.has("message") ? result.get("message").asText() : "Could not start quiz.");
+            }
+        });
 
-           new Thread(task).start();
-       }
+        task.setOnFailed(e -> {
+            task.getException().printStackTrace();
+            questionLabel.setText("Error starting quiz attempt.");
+        });
+
+        new Thread(task).start();
+    }
 
     private void loadQuestions() {
         Task<List<QuizQuestion>> task = new Task<>() {
@@ -79,19 +96,30 @@ public class QuizTakingController {
             protected List<QuizQuestion> call() throws Exception {
                 JsonNode raw = quizService.fetchQuestions(quiz.getId());
                 System.out.println("Raw questions response: " + raw);
-                return objectMapper.readValue(raw.traverse(),
+                JsonNode questionsNode = raw.isArray() ? raw : raw.path("questions");
+                if (!questionsNode.isArray()) {
+                    questionsNode = raw.path("data");
+                }
+                if (!questionsNode.isArray()) {
+                    questionsNode = raw;
+                }
+                return objectMapper.readValue(questionsNode.traverse(),
                         objectMapper.getTypeFactory().constructCollectionType(List.class, QuizQuestion.class));
             }
         };
 
         task.setOnSucceeded(e -> {
             questions = task.getValue();
-            if (questions.isEmpty()) {
+            if (questions == null || questions.isEmpty()) {
                 questionLabel.setText("No questions found for this quiz.");
                 return;
             }
-            secondsRemaining = quiz.getDurationMinutes() * 60;
-            startTimer();
+            if (quiz.hasDuration()) {
+                secondsRemaining = quiz.getDurationMinutes() * 60;
+                startTimer();
+            } else {
+                timerLabel.setText("Quiz in progress");
+            }
             showQuestion();
         });
 
@@ -118,30 +146,38 @@ public class QuizTakingController {
     }
 
     private void showQuestion() {
+        if (questions == null || questions.isEmpty() || currentIndex >= questions.size()) {
+            return;
+        }
         QuizQuestion q = questions.get(currentIndex);
         questionLabel.setText(q.getQuestion());
         optionsBox.getChildren().clear();
         optionsGroup = new ToggleGroup();
 
-        for (String option : q.getOptions()) {
-            RadioButton rb = new RadioButton(option);
+        String[] options = q.getOptions();
+        for (int optionIndex = 0; optionIndex < options.length; optionIndex++) {
+            RadioButton rb = new RadioButton(options[optionIndex]);
             rb.setToggleGroup(optionsGroup);
+            rb.setUserData(optionIndex);
             optionsBox.getChildren().add(rb);
         }
     }
 
     @FXML
     private void handleSubmit(ActionEvent event) {
+        if (questions == null || questions.isEmpty() || currentIndex >= questions.size()) {
+            return;
+        }
         Toggle selected = optionsGroup.getSelectedToggle();
-        String selectedText = selected != null ? ((RadioButton) selected).getText() : "";
+        String selectedIndex = selected != null ? String.valueOf((Integer) selected.getUserData()) : "";
         QuizQuestion currentQuestion = questions.get(currentIndex);
 
         Task<JsonNode> task = new Task<>() {
             @Override
             protected JsonNode call() throws Exception {
-                return quizService.submitAnswer(attemptId, currentQuestion.getQuestionId(), selectedText);
+                return quizService.submitAnswer(attemptId, currentQuestion.getQuestionId(), selectedIndex);
             }
-            };
+        };
 
         task.setOnSucceeded(e -> {
             System.out.println("Raw submitAnswer response: " + task.getValue());
@@ -153,7 +189,7 @@ public class QuizTakingController {
             advanceOrFinish(); // don't get stuck if one answer fails to save
         });
         new Thread(task).start();
-        }
+    }
 
     private void advanceOrFinish() {
         currentIndex++;
@@ -192,7 +228,7 @@ public class QuizTakingController {
             QuizResultsController controller = loader.getController();
             controller.setResults(resultsJson, autoSubmitted);
             Stage stage = (Stage) submitButton.getScene().getWindow();
-            stage.setScene(SceneUtils.createStyledScene(root, 600, 420));
+            stage.setScene(SceneUtils.createStyledScene(root, 900, 620));
         }
         catch (Exception e) {
             e.printStackTrace();

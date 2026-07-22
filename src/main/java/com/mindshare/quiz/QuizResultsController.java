@@ -18,16 +18,28 @@ public class QuizResultsController {
 
     public void setResults(JsonNode resultsJson, boolean autoSubmitted) {
         int score = resultsJson.has("score") ? resultsJson.get("score").asInt() : 0;
-        scoreLabel.setText("Score: " + score + "points");
-        gradeLabel.setText(autoSubmitted ? "Time expired - auto-submitted" : "Submitted successfully");
+        scoreLabel.setText("Score: " + score + " points");
+        boolean backendAutoSubmitted = resultsJson.has("auto_submitted") && resultsJson.get("auto_submitted").asBoolean();
+        gradeLabel.setText((autoSubmitted || backendAutoSubmitted) ? "Time expired - auto-submitted" : "Submitted successfully");
 
         StringBuilder sb = new StringBuilder();
-        JsonNode feedback = resultsJson.get("feedback");
+        JsonNode feedback = resultsJson.path("feedback");
+        if ((feedback.isMissingNode() || !feedback.isArray()) && resultsJson.has("breakdown")) {
+            feedback = resultsJson.get("breakdown");
+        }
         if (feedback != null) {
             for (JsonNode f : feedback) {
-                sb.append(f.get("question").asText())
+                JsonNode questionNode = f.get("question");
+                if (questionNode == null) {
+                    questionNode = f.get("Question");
+                }
+                JsonNode correctNode = f.get("is_correct");
+                if (correctNode == null) {
+                    correctNode = f.get("correct");
+                }
+                sb.append(questionNode != null ? questionNode.asText() : "Unknown question")
                         .append(" - ")
-                        .append(f.get("is_correct").asBoolean() ? "Correct" : "Incorrect")
+                        .append(correctNode != null && correctNode.asBoolean() ? "Correct" : "Incorrect")
                         .append("\n");
             }
         }

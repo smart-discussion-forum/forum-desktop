@@ -32,13 +32,6 @@ public class MyGroupsController {
     public void initialize() {
         loadGroups();
 
-        //To be removed after getting the real routes to groups from the backend team.
-        Group fakeGroup = new Group();
-        fakeGroup.setId(1);
-        fakeGroup.setName("BSSE Year 2 - Group G22");
-        fakeGroup.setDescription("Test group for UI development");
-        groupListView.getItems().add(fakeGroup);
-
         groupListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) { // double-click to open
                 Group selected = groupListView.getSelectionModel().getSelectedItem();
@@ -76,12 +69,19 @@ public class MyGroupsController {
         fetchTask.setOnSucceeded(event -> {
             List<Group> groups = fetchTask.getValue();
             groupListView.setItems(FXCollections.observableArrayList(groups));
+            statusLabel.setText(groups == null || groups.isEmpty() ? "No groups found for your account." : "");
+            statusLabel.setVisible(groups == null || groups.isEmpty());
         });
 
         fetchTask.setOnFailed(event -> {
-            statusLabel.setText("Could not load groups. Check your connection.");
+            Throwable failure = fetchTask.getException();
+            statusLabel.setText(failure != null && failure.getMessage() != null
+                    ? failure.getMessage()
+                    : "Could not load groups. Check your connection.");
             statusLabel.setVisible(true);
-            fetchTask.getException().printStackTrace();
+            if (failure != null) {
+                failure.printStackTrace();
+            }
         });
 
         new Thread(fetchTask).start();
