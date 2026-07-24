@@ -233,3 +233,47 @@
     -fx-background-radius: 18;
     -fx-border-radius: 18;
 }
+
+.form-field-label {
+    -fx-font-weight: 700;
+    -fx-font-size: 14px;
+    -fx-text-fill: #101827;
+}
+.date-picker {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+.date-picker > .text-field {
+    -fx-background-color: rgba(255, 255, 255, 0.94);
+    -fx-background-radius: 16 0 0 16;
+    -fx-border-color: rgba(148, 163, 184, 0.28);
+    -fx-border-radius: 16 0 0 16;
+    -fx-padding: 10;
+}
+.date-picker > .arrow-button {
+    -fx-background-color: rgba(255, 255, 255, 0.94);
+    -fx-background-radius: 0 16 16 0;
+    -fx-border-color: rgba(148, 163, 184, 0.28);
+    -fx-border-radius: 0 16 16 0;
+    -fx-cursor: hand;
+}
+
+.date-picker > .arrow-button > .arrow {
+    -fx-background-color: #101827;
+}
+/* ComboBox Adjustments */
+.combo-box-base > .arrow-button > .arrow {
+    -fx-background-color: #101827;
+}
+/* Ensure ScrollPane viewport and content area are transparent */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .corner {
+    -fx-background-color: transparent;
+}

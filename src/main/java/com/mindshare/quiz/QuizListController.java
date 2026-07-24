@@ -85,7 +85,7 @@ public class QuizListController {
                 controller.setResults(results, false);
 
                 Stage stage = (Stage) openButton.getScene().getWindow();
-                stage.setScene(SceneUtils.createStyledScene(root, 900, 620));
+                SceneUtils.switchScene(stage, root);
                 return;
             }
 
@@ -96,7 +96,7 @@ public class QuizListController {
             controller.setQuiz(new Quiz(selected.getId(), selected.getTitle(), durationMinutes));
 
             Stage stage = (Stage) openButton.getScene().getWindow();
-            stage.setScene(SceneUtils.createStyledScene(root, 600, 420));
+            SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
             statusLabel.setText("Could not open the selected quiz.");
@@ -109,7 +109,7 @@ public class QuizListController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(SceneUtils.createStyledScene(root, 600, 420));
+            SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }

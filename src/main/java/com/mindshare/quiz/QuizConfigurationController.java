@@ -1,5 +1,7 @@
 package com.mindshare.quiz;
 
+import com.mindshare.utils.SceneUtils;
+import javafx.scene.Node;
 import com.mindshare.api.GroupService;
 import com.mindshare.api.QuizAdminService;
 import com.mindshare.group.Group;
@@ -11,37 +13,47 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.IOException;
 
 public class QuizConfigurationController {
 
-    @FXML private TextField titleField;
-    @FXML private TextField dateField;
-    @FXML private TextField durationField;
-    @FXML private ComboBox<Group> categoryBox;
-    @FXML private VBox questionsContainer;
-    @FXML private Label statusLabel;
-    @FXML private Button saveButton;
-    @FXML private Button backButton;
-    @FXML private Button addQuestionButton;
+    @FXML
+    private TextField titleField;
+    @FXML
+    private DatePicker datePicker;
+    @FXML
+    private TextField durationField;
+    @FXML
+    private ComboBox<Group> categoryBox;
+    @FXML
+    private VBox questionsContainer;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Button backButton;
+    @FXML
+    private Button addQuestionButton;
+
+    @FXML
+    private Button dashboardButton;
+    @FXML
+    private Button groupChatButton;
 
     private final GroupService groupService = new GroupService();
     private final QuizAdminService quizAdminService = new QuizAdminService();
     private final List<QuizQuestionBuilderView> questionBuilders = new ArrayList<>();
-    private static final List<DateTimeFormatter> ACCEPTED_DATE_FORMATS = List.of(
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"),
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"),
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-    );
 
     @FXML
     public void initialize() {
@@ -73,7 +85,7 @@ public class QuizConfigurationController {
     @FXML
     private void handleSave(ActionEvent event) {
         if (titleField.getText().isBlank()
-                || dateField.getText().isBlank()
+                || datePicker.getValue() == null
                 || durationField.getText().isBlank()
                 || categoryBox.getValue() == null) {
             statusLabel.setText("Title, date, duration, at least one question, and target group are required.");
@@ -84,8 +96,10 @@ public class QuizConfigurationController {
 
         try {
             Integer durationMinutes = Integer.parseInt(durationField.getText().trim());
-            String normalizedDate = parseDateTime(dateField.getText().trim())
-                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+            // Format selected date into ISO DateTime string (e.g., 2026-07-22T00:00:00)
+            LocalDate selectedDate = datePicker.getValue();
+            String normalizedDate = selectedDate.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
             Group targetGroup = categoryBox.getValue();
             List<QuizAdminService.QuestionPayload> questions = buildQuestionPayloads();
@@ -138,27 +152,12 @@ public class QuizConfigurationController {
             statusLabel.setText("Duration must be a number.");
             statusLabel.setStyle("-fx-text-fill: red");
             statusLabel.setVisible(true);
-        } catch (DateTimeParseException ex) {
-            statusLabel.setText("Use a date like 2026-07-22 14:30 or 2026-07-22T14:30:00.");
-            statusLabel.setStyle("-fx-text-fill: red");
-            statusLabel.setVisible(true);
         } catch (Exception ex) {
             ex.printStackTrace();
-            statusLabel.setText("Date must use yyyy-MM-dd HH:mm.");
+            statusLabel.setText("An unexpected error occurred while saving.");
             statusLabel.setStyle("-fx-text-fill: red");
             statusLabel.setVisible(true);
         }
-    }
-
-    private LocalDateTime parseDateTime(String input) {
-        for (DateTimeFormatter formatter : ACCEPTED_DATE_FORMATS) {
-            try {
-                return LocalDateTime.parse(input, formatter);
-            } catch (DateTimeParseException ignored) {
-                // Try the next accepted format.
-            }
-        }
-        throw new DateTimeParseException("Unsupported date format", input, 0);
     }
 
     @FXML
@@ -223,14 +222,26 @@ public class QuizConfigurationController {
 
     @FXML
     private void handleBack(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        navigateTo(event, "/com/mindshare/dashboard/DashboardView.fxml");
     }
 
-}
+    @FXML
+    private void handleDashboard(ActionEvent event) {
+        navigateTo(event, "/com/mindshare/dashboard/DashboardView.fxml");
+    }
+
+    @FXML
+    private void handleGroupChat(ActionEvent event) {
+        navigateTo(event, "/com/mindshare/chat/ChatView.fxml");
+    }
+
+        private void navigateTo (ActionEvent event, String fxmlPath){
+            try {
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+                SceneUtils.switchScene(stage, root);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }

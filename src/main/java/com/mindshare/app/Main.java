@@ -3,7 +3,6 @@ package com.mindshare.app;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -22,7 +21,7 @@ public class Main extends Application {
         Parent root = loader.load();
 
         primaryStage.setTitle("MindShare Discussion Forum");
-        primaryStage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
+        com.mindshare.utils.SceneUtils.switchScene(primaryStage, root, 1000, 700);
         primaryStage.show();
 
 

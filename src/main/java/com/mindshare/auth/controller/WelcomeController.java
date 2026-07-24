@@ -39,7 +39,7 @@ alert.showAndWait();
         try {
             Parent loginRoot = FXMLLoader.load(getClass().getResource("/com/mindshare/auth/LoginView.fxml"));
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(loginRoot, 600,420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, loginRoot);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -51,7 +51,7 @@ alert.showAndWait();
         try {
             Parent registerRoot = FXMLLoader.load(getClass().getResource("/com/mindshare/auth/RegistrationView.fxml"));
             Stage stage = (Stage) registerButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(registerRoot, 600, 420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, registerRoot);
                 }
         catch (Exception e) {
             e.printStackTrace();

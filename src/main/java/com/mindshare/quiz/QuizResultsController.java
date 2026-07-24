@@ -52,7 +52,7 @@ public class QuizResultsController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) doneButton.getScene().getWindow();
-            stage.setScene(SceneUtils.createStyledScene(root, 600, 420));
+            SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }

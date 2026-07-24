@@ -12,7 +12,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -118,7 +117,7 @@ public class TopicDetailController {
                     getClass().getResource("/com/mindshare/group/GroupDetailView.fxml"));
             Parent groupDetailRoot = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(groupDetailRoot, 600, 420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, groupDetailRoot);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -132,11 +131,10 @@ public class TopicDetailController {
             ExportDiscussionController controller = loader.getController();
             controller.setDiscussion(currentTopic, postsListView.getItems());
             Stage stage = (Stage) exportButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 }
-

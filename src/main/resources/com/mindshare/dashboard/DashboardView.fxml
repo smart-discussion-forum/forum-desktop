@@ -15,8 +15,9 @@
     <Label text="Dashboard" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
     <Label fx:id="welcomeLabel" style="-fx-font-size: 14px;"/>
 
-    <Button fx:id="discussionButton" text="Discussions" onAction="#handleDiscussions" prefWidth="180"/>
-    <Button fx:id="quizButton" text="Quiz" onAction="#handleQuiz" prefWidth="180"/>
+    <Button fx:id="groupChatButton" text="My Groups" onAction="#handleGroupChat" prefWidth="180"/>
+    <Button fx:id="quizButton" text="Quizzes" onAction="#handleQuiz" prefWidth="180"/>
+    <Button fx:id="recommendationsButton" text="Recommendations" onAction="#handleRecommendations" prefWidth="180"/>
     <Button fx:id="statisticsButton" text="Statistics" onAction="#handleStatistics" prefWidth="180"/>
-    <Button fx:id="notificationsButton" text="Notifications" onAction="#handleNotifications" prefWidth="180"/>
+    <Button fx:id="profileButton" text="Profile" onAction="#handleProfile" prefWidth="180"/>
 </VBox>

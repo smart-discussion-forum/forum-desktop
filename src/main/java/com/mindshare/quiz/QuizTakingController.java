@@ -228,7 +228,7 @@ public class QuizTakingController {
             QuizResultsController controller = loader.getController();
             controller.setResults(resultsJson, autoSubmitted);
             Stage stage = (Stage) submitButton.getScene().getWindow();
-            stage.setScene(SceneUtils.createStyledScene(root, 900, 620));
+            SceneUtils.switchScene(stage, root);
         }
         catch (Exception e) {
             e.printStackTrace();
