@@ -46,10 +46,13 @@ public class LoginController{
 
             if (response.get("success").asBoolean()) {
                 String token = response.get("token").asText();
-                String userName = response.get("user").get("name").asText();
-                String userRole = response.get("user").get("role").asText();
+                JsonNode userNode = response.get("user");
+                String userName = userNode.get("name").asText();
+                String userRole = userNode.get("role").asText();
+                String userEmail = userNode.has("email") ? userNode.get("email").asText() : null;
+                int userId = userNode.has("id") ? userNode.get("id").asInt() : -1;
 
-                UserSession.set(token, userName, userRole);
+                UserSession.set(token, userName, userRole, userEmail, userId);
 
                 System.out.println("Login successful. Token stored for: " + userName);
 
@@ -59,7 +62,7 @@ public class LoginController{
                 javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(dashboardUrl);
                 javafx.scene.Parent dashboardRoot = loader.load();
                 javafx.stage.Stage stage = (javafx.stage.Stage) loginButton.getScene().getWindow();
-                stage.setScene(new javafx.scene.Scene(dashboardRoot, 600, 420));
+                com.mindshare.utils.SceneUtils.switchScene(stage, dashboardRoot);
 
             } else {
                 String message = response.has("message") ? response.get("message").asText() : "Login failed.";

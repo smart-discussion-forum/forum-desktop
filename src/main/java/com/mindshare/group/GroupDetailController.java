@@ -4,49 +4,57 @@ import com.mindshare.discussion.model.Topic;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class GroupDetailController {
 
-    @FXML
-    private Label groupNameLabel;
-
-    @FXML
-    private TextField searchField;
-
-    @FXML
-    private ListView<Topic> topicListView;
-
-    @FXML
-    private Button createTopicButton;
-
-    @FXML
-    private Button groupChatButton;
-
-    @FXML
-    private Button backButton;
+    @FXML private Label groupNameLabel;
+    @FXML private TextField searchField;
+    @FXML private ListView<Topic> topicListView;
+    @FXML private Button createTopicButton;
+    @FXML private Button groupChatButton;
+    @FXML private Button backButton;
 
     private Group currentGroup;
     private List<Topic> currentTopics = new ArrayList<>();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    //Called from MyGroupsController right after loading this screen. The controller needs to be told explicitly which group was clicked.
     public void setGroup(Group group) {
         this.currentGroup = group;
-        groupNameLabel.setText(group.getName());
+        if (groupNameLabel != null && group != null) {
+            groupNameLabel.setText(group.getName());
+        }
+        setupTopicListView();
         loadTopics();
+    }
+
+    private void setupTopicListView() {
+        // Format the topics to display cleanly like on the web: "Title [Category] (X posts)"
+        topicListView.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(Topic topic, boolean empty) {
+                super.updateItem(topic, empty);
+                if (empty || topic == null) {
+                    setText(null);
+                } else {
+                    String categoryStr = (topic.getCategory() != null && !topic.getCategory().isBlank())
+                            ? " [" + topic.getCategory() + "]"
+                            : "";
+                    int postCount = topic.getPostsCount();
+                    setText(topic.getTitle() + categoryStr + " (" + postCount + " posts)");
+                }
+            }
+        });
 
         topicListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -57,6 +65,7 @@ public class GroupDetailController {
             }
         });
     }
+
     private void openTopicDetail(Topic topic) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -67,16 +76,16 @@ public class GroupDetailController {
             controller.setTopic(topic);
 
             Stage stage = (Stage) topicListView.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(topicDetailRoot, 600, 420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, topicDetailRoot);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     private void loadTopics() {
-        javafx.concurrent.Task<List<Topic>> fetchTask = new javafx.concurrent.Task<>() {
+        if (currentGroup == null) return;
+
+        Task<List<Topic>> fetchTask = new Task<>() {
             @Override
             protected List<Topic> call() throws Exception {
                 JsonNode response = new com.mindshare.api.GroupTopicService().fetchTopicsRaw(currentGroup.getId());
@@ -96,10 +105,7 @@ public class GroupDetailController {
             topicListView.setItems(FXCollections.observableArrayList(currentTopics));
         });
 
-        fetchTask.setOnFailed(event -> {
-            fetchTask.getException().printStackTrace();
-            // TODO: show a status label like MyGroupsController does
-        });
+        fetchTask.setOnFailed(event -> fetchTask.getException().printStackTrace());
 
         new Thread(fetchTask).start();
     }
@@ -120,40 +126,41 @@ public class GroupDetailController {
 
     @FXML
     private void handleCreateTopic(ActionEvent event) {
-        if (currentGroup == null) {
-            return;
-        }
+        if (currentGroup == null) return;
 
+        // Prompt 1: Topic Title
         TextInputDialog titleDialog = new TextInputDialog();
-        titleDialog.setTitle("Create Topic");
-        titleDialog.setHeaderText("Topic title");
-        titleDialog.setContentText("Enter the new topic title:");
+        titleDialog.setTitle("Create New Topic");
+        titleDialog.setHeaderText("Create Topic for " + currentGroup.getName());
+        titleDialog.setContentText("Topic title:");
 
-        java.util.Optional<String> titleResult = titleDialog.showAndWait();
+        Optional<String> titleResult = titleDialog.showAndWait();
         if (titleResult.isEmpty() || titleResult.get().isBlank()) {
             return;
         }
 
+        // Prompt 2: Optional Category
         TextInputDialog categoryDialog = new TextInputDialog();
-        categoryDialog.setTitle("Create Topic");
-        categoryDialog.setHeaderText("Topic category");
-        categoryDialog.setContentText("Enter a category (optional):");
+        categoryDialog.setTitle("Create New Topic");
+        categoryDialog.setHeaderText("Add Category");
+        categoryDialog.setContentText("Category (optional):");
 
-        java.util.Optional<String> categoryResult = categoryDialog.showAndWait();
+        Optional<String> categoryResult = categoryDialog.showAndWait();
+        String category = categoryResult.isPresent() ? categoryResult.get().trim() : null;
 
-        javafx.concurrent.Task<com.fasterxml.jackson.databind.JsonNode> task = new javafx.concurrent.Task<>() {
+        Task<JsonNode> task = new Task<>() {
             @Override
-            protected com.fasterxml.jackson.databind.JsonNode call() throws Exception {
+            protected JsonNode call() throws Exception {
                 return new com.mindshare.api.GroupTopicService().createTopic(
                         currentGroup.getId(),
                         titleResult.get().trim(),
-                        categoryResult.isPresent() ? categoryResult.get().trim() : null
+                        category
                 );
             }
         };
 
-        task.setOnSucceeded(workerEvent -> loadTopics());
-        task.setOnFailed(workerEvent -> task.getException().printStackTrace());
+        task.setOnSucceeded(workerEvent -> loadTopics()); // Refresh list upon creation
+        task.setOnFailed(workerEvent -> workerEvent.getSource().getException().printStackTrace());
         new Thread(task).start();
     }
 
@@ -162,10 +169,14 @@ public class GroupDetailController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/chat/ChatView.fxml"));
             Parent root = loader.load();
+
             com.mindshare.chat.ChatController controller = loader.getController();
-            controller.setGroupId(currentGroup.getId());
+            if (currentGroup != null) {
+                controller.setGroupId(currentGroup.getId());
+            }
+
             Stage stage = (Stage) groupChatButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 900, 650));
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -178,9 +189,8 @@ public class GroupDetailController {
                     getClass().getResource("/com/mindshare/group/MyGroupsView.fxml"));
             Parent groupsRoot = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(groupsRoot, 600, 420));
-        }
-        catch (Exception e) {
+            com.mindshare.utils.SceneUtils.switchScene(stage, groupsRoot);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

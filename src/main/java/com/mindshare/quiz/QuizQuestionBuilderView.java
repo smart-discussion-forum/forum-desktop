@@ -22,7 +22,6 @@ public class QuizQuestionBuilderView extends VBox {
     private final Label headerLabel = new Label();
     private final TextField questionField = new TextField();
     private final VBox optionsBox = new VBox(8);
-    private final ComboBox<String> correctOptionBox = new ComboBox<>();
     private final Spinner<Integer> marksSpinner = new Spinner<>();
     private final Button addOptionButton = new Button("+ Add Option");
     private final Button removeQuestionButton = new Button("Remove");
@@ -52,14 +51,6 @@ public class QuizQuestionBuilderView extends VBox {
         questionField.setPromptText("Enter question text");
         questionField.textProperty().addListener((obs, oldValue, newValue) -> draft.setQuestionText(newValue));
 
-        correctOptionBox.setPromptText("Correct option");
-        correctOptionBox.setItems(FXCollections.observableArrayList());
-        correctOptionBox.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null) {
-                draft.setCorrectOptionIndex(correctOptionBox.getItems().indexOf(newValue));
-            }
-        });
-
         marksSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1));
         marksSpinner.setEditable(true);
         marksSpinner.valueProperty().addListener((obs, oldValue, newValue) -> draft.setMarks(newValue));
@@ -72,17 +63,15 @@ public class QuizQuestionBuilderView extends VBox {
         marksLabel.setStyle("-fx-font-weight: bold;");
         settingsRow.getChildren().addAll(addOptionButton, marksLabel, marksSpinner);
 
-        getChildren().addAll(headerRow, questionField, optionsBox, correctOptionBox, settingsRow);
+        getChildren().addAll(headerRow, questionField, optionsBox, settingsRow);
 
         draft.ensureMinimumOptions(2);
         rebuildOptions();
-        syncCorrectOptions();
     }
 
     private void addOptionField(String initialValue) {
         draft.getOptions().add(initialValue);
         rebuildOptions();
-        syncCorrectOptions();
     }
 
     private void removeOptionField(int index) {
@@ -94,14 +83,14 @@ public class QuizQuestionBuilderView extends VBox {
             draft.setCorrectOptionIndex(Math.max(0, draft.getOptions().size() - 1));
         }
         rebuildOptions();
-        syncCorrectOptions();
     }
 
     private void rebuildOptions() {
         optionsBox.getChildren().clear();
-        correctOptionBox.getItems().clear();
 
         List<String> options = draft.getOptions();
+        ToggleGroup group = new ToggleGroup();
+
         for (int i = 0; i < options.size(); i++) {
             int optionIndex = i;
             TextField optionField = new TextField(options.get(i));
@@ -109,7 +98,6 @@ public class QuizQuestionBuilderView extends VBox {
             optionField.textProperty().addListener((obs, oldValue, newValue) -> options.set(optionIndex, newValue));
 
             RadioButton correctRadio = new RadioButton();
-            ToggleGroup group = new ToggleGroup();
             correctRadio.setToggleGroup(group);
             correctRadio.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
                 if (isSelected) {
@@ -127,22 +115,7 @@ public class QuizQuestionBuilderView extends VBox {
             optionRow.setAlignment(Pos.CENTER_LEFT);
             HBox.setHgrow(optionField, javafx.scene.layout.Priority.ALWAYS);
             optionsBox.getChildren().add(optionRow);
-            correctOptionBox.getItems().add("Option " + (i + 1));
-        }
-
-        correctOptionBox.setValue(correctOptionBox.getItems().isEmpty()
-                ? null
-                : correctOptionBox.getItems().get(Math.min(draft.getCorrectOptionIndex(), correctOptionBox.getItems().size() - 1)));
-    }
-
-    private void syncCorrectOptions() {
-        correctOptionBox.setItems(FXCollections.observableArrayList(
-                draft.getOptions().stream().map(option -> option.isBlank() ? "Untitled option" : option).toList()
-        ));
-        if (!correctOptionBox.getItems().isEmpty()) {
-            int safeIndex = Math.min(draft.getCorrectOptionIndex(), correctOptionBox.getItems().size() - 1);
-            correctOptionBox.setValue(correctOptionBox.getItems().get(safeIndex));
-        }
+                   }
     }
 
     public QuizQuestionDraft getDraft() {

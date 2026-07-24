@@ -51,7 +51,7 @@ public class ParticipationStatisticsController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/admin/AdminDashboardView.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }

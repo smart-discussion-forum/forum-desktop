@@ -92,7 +92,7 @@ public class RecommendationController {
             TopicDetailController controller = loader.getController();
             controller.setTopic(selected);
             Stage stage = (Stage) viewTopicButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,7 +109,7 @@ public class RecommendationController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -7,7 +7,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -17,14 +16,14 @@ import java.util.List;
 
 public class MyGroupsController {
 
-        @FXML
-        private ListView<Group> groupListView;
+    @FXML
+    private ListView<Group> groupListView;
 
-        @FXML
-        private Label statusLabel;
+    @FXML
+    private Label statusLabel;
 
-        @FXML
-        private Button backButton;
+    @FXML
+    private Button backButton;
 
     private final GroupService groupService = new GroupService();
 
@@ -33,7 +32,7 @@ public class MyGroupsController {
         loadGroups();
 
         groupListView.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // double-click to open
+            if (event.getClickCount() == 1) { // click to open
                 Group selected = groupListView.getSelectionModel().getSelectedItem();
                 if (selected != null) {
                     openGroupDetail(selected);
@@ -45,14 +44,16 @@ public class MyGroupsController {
     private void openGroupDetail(Group group) {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/mindshare/group/GroupDetailView.fxml"));
-            Parent groupDetailRoot = loader.load();
+                    getClass().getResource("/com/mindshare/chat/ChatView.fxml"));
+            Parent root = loader.load();
 
-            GroupDetailController controller = loader.getController();
-            controller.setGroup(group);
+
+            // Pass selected group to ChatController
+            com.mindshare.chat.ChatController chatController = loader.getController();
+            chatController.setGroupId(group.getId());
 
             Stage stage = (Stage) groupListView.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(groupDetailRoot, 600, 420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,11 +95,9 @@ public class MyGroupsController {
                     getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml"));
             Parent dashboardRoot = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(dashboardRoot, 600, 420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, dashboardRoot);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        }
     }
-
-
+}

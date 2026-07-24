@@ -145,7 +145,7 @@ public class AdminDashboardController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/admin/ParticipationStatisticsView.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) statisticsButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -157,7 +157,7 @@ public class AdminDashboardController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }

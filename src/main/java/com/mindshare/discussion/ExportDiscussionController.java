@@ -74,7 +74,7 @@ public class ExportDiscussionController {
             TopicDetailController controller = loader.getController();
             controller.setTopic(topic);
             Stage stage = (Stage) closeButton.getScene().getWindow();
-            stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }

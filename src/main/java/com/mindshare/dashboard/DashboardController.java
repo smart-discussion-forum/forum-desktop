@@ -3,8 +3,12 @@ package com.mindshare.dashboard;
 import com.mindshare.auth.model.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
+
 
 public class DashboardController {
 
@@ -12,16 +16,19 @@ public class DashboardController {
         private Label welcomeLabel;
 
         @FXML
-        private Button discussionButton;
+        private Button groupChatButton;
 
         @FXML
         private Button quizButton;
 
         @FXML
+        private Button recommendationsButton;
+
+        @FXML
         private Button statisticsButton;
 
         @FXML
-        private Button notificationsButton;
+        private Button profileButton;
 
         @FXML
         public void initialize() {
@@ -41,68 +48,49 @@ public class DashboardController {
                quizButton.setManaged(isStudent || isLecturer);
 
                 if (isLecturer) {
-                        quizButton.setText("Configure Quiz");
-                        // to be linked to a Quiz configuration screen once built
+                        quizButton.setText("Create Quiz");
                 }
-
         }
-
         @FXML
-        private void handleDiscussions(ActionEvent event) {
-                try {
-                        javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                                getClass().getResource("/com/mindshare/group/MyGroupsView.fxml"));
-                        javafx.scene.Parent groupsRoot = loader.load();
-                        javafx.stage.Stage stage = (javafx.stage.Stage) discussionButton.getScene().getWindow();
-                        stage.setScene(new javafx.scene.Scene(groupsRoot, 600, 420));
-                } catch (Exception e) {
-                        e.printStackTrace();
-                }
+        private void handleGroupChat(ActionEvent event) {
+                navigateTo("/com/mindshare/group/MyGroupsView.fxml", groupChatButton);
         }
 
         @FXML
         private void handleQuiz(ActionEvent event) {
-                try {
-                        String role = UserSession.getUserRole();
-                        String fxmlPath = role.equalsIgnoreCase("lecturer")
-                                ? "/com/mindshare/quiz/QuizConfigurationView.fxml"
-                                : "/com/mindshare/quiz/QuizListView.fxml";
-
-                        javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource(fxmlPath));
-                        javafx.scene.Parent root = loader.load();
-
-                        javafx.stage.Stage stage = (javafx.stage.Stage) quizButton.getScene().getWindow();
-                        stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
+                String role = UserSession.getUserRole();
+                String fxmlPath = role.equalsIgnoreCase("lecturer")
+                        ? "/com/mindshare/quiz/QuizConfigurationView.fxml"
+                        : "/com/mindshare/quiz/QuizListView.fxml";
+                navigateTo(fxmlPath, quizButton);
         }
 
-                catch (Exception e) {
-                        e.printStackTrace();
-                }
-
+        @FXML
+        private void handleRecommendations(ActionEvent event) {
+                navigateTo("/com/mindshare/recommendation/RecommendationView.fxml", recommendationsButton);
         }
 
         @FXML
         private void handleStatistics(ActionEvent event) {
-                try {
-                        javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/mindshare/admin/AdminDashboardView.fxml"));
-                        javafx.scene.Parent root = loader.load();
-                        javafx.stage.Stage stage = (javafx.stage.Stage) statisticsButton.getScene().getWindow();
-                        stage.setScene(com.mindshare.utils.SceneUtils.createStyledScene(root, 600, 420));
-                } catch (Exception e) {
-                        e.printStackTrace();
-                }
+                navigateTo("/com/mindshare/admin/AdminDashboardView.fxml", statisticsButton);
         }
 
         @FXML
-        private void handleNotifications(ActionEvent event) {
+        private void handleProfile(ActionEvent event) {
+                navigateTo("/com/mindshare/profile/ProfileView.fxml", profileButton);
+        }
+
+        private void navigateTo(String fxmlPath, Button sourceButton) {
                 try {
-                        javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/mindshare/chat/ChatView.fxml"));
-                        javafx.scene.Parent root = loader.load();
-                        javafx.stage.Stage stage = (javafx.stage.Stage) notificationsButton.getScene().getWindow();
-                        stage.setScene(new javafx.scene.Scene(root, 600, 420));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                        Parent root = loader.load();
+                        Stage stage = (Stage) sourceButton.getScene().getWindow();
+                        com.mindshare.utils.SceneUtils.switchScene(stage, root);
                 } catch (Exception e) {
                         e.printStackTrace();
                 }
         }
-    }
+}
+
+
 
