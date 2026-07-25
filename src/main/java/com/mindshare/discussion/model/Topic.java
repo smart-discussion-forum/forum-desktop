@@ -14,6 +14,10 @@ public class Topic {
     @JsonProperty("posts_count")
     private int postsCount;
 
+    @JsonProperty("recent_posts_count")
+    private int recentPostsCount;
+
+
     private Creator creator;
 
     @JsonProperty("latest_post")
@@ -62,6 +66,15 @@ public class Topic {
     public void setPostsCount(int postsCount) {
         this.postsCount = postsCount;
     }
+
+    public int getRecentPostsCount() {
+        return recentPostsCount;
+    }
+
+    public void setRecentPostsCount(int recentPostsCount) {
+        this.recentPostsCount = recentPostsCount;
+    }
+
 
     public Creator getCreator() {
         return creator;
