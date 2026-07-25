@@ -180,13 +180,18 @@ public class ChatController {
 
     @FXML
     private void handleViewTopics(ActionEvent event) {
+        Group selectedGroup = groupsListView.getSelectionModel().getSelectedItem();
+        if (selectedGroup == null) {
+            showError("Select a group first.");
+            return;
+        }
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/group/GroupDetailView.fxml"));
             Parent root = loader.load();
 
             com.mindshare.group.GroupDetailController controller = loader.getController();
-            // Pass group object to topics view
-            // controller.setGroup(currentGroup);
+            controller.setGroup(selectedGroup);
 
             Stage stage = (Stage) topicsButton.getScene().getWindow();
             com.mindshare.utils.SceneUtils.switchScene(stage, root);
