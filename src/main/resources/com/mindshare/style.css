@@ -323,3 +323,33 @@
     -fx-text-fill: #e2e8f0;
     -fx-font-size: 13px;
 }
+
+.filter-pill {
+    -fx-background-color: white;
+    -fx-text-fill: #101827;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-border-color: rgba(148, 163, 184, 0.35);
+    -fx-padding: 6 16 6 16;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-effect: none;
+}
+
+.filter-pill:selected {
+    -fx-background-color: #1f2a44;
+    -fx-text-fill: white;
+}
+
+.policy-card {
+    -fx-background-color: rgba(255, 255, 255, 0.92);
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(148, 163, 184, 0.2);
+    -fx-border-radius: 16;
+    -fx-padding: 14 18 14 18;
+}
+
+.policy-card .label {
+    -fx-text-fill: #101827;
+    -fx-font-size: 13px;
+}

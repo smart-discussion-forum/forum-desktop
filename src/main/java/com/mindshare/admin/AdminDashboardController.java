@@ -18,7 +18,10 @@ public class AdminDashboardController {
     @FXML private Label statusLabel;
     @FXML private Label policyLabel;
     @FXML private TextField searchField;
-    @FXML private ComboBox<String> filterBox;
+    @FXML private ToggleButton filterAll;
+    @FXML private ToggleButton filterActive;
+    @FXML private ToggleButton filterBlacklisted;
+    @FXML private ToggleButton filterWarned;
     @FXML private TableView<JsonNode> usersTable;
     @FXML private TableColumn<JsonNode, String> nameColumn;
     @FXML private TableColumn<JsonNode, String> emailColumn;
@@ -38,8 +41,6 @@ public class AdminDashboardController {
 
     @FXML
     public void initialize() {
-        filterBox.setItems(FXCollections.observableArrayList("All", "Active", "Blacklisted", "Warned"));
-        filterBox.getSelectionModel().selectFirst();
         nameColumn.setCellValueFactory(data -> value(data.getValue(), "name"));
         emailColumn.setCellValueFactory(data -> value(data.getValue(), "email"));
         roleColumn.setCellValueFactory(data -> value(data.getValue(), "role"));
@@ -61,18 +62,33 @@ public class AdminDashboardController {
 
     @FXML private void handleSearch(ActionEvent event) { loadUsers(); }
 
-    @FXML private void handleFilter(ActionEvent event) { loadUsers(); }
+    @FXML private void handleFilter(ActionEvent event) {
+        if (!filterAll.isSelected() && !filterActive.isSelected()
+                && !filterBlacklisted.isSelected() && !filterWarned.isSelected()) {
+            filterAll.setSelected(true);
+        }
+        loadUsers();
+    }
+
+    private String selectedFilter() {
+        if (filterActive.isSelected()) return "active";
+        if (filterBlacklisted.isSelected()) return "blacklisted";
+        if (filterWarned.isSelected()) return "warned";
+        return "all";
+    }
 
     private void loadUsers() {
         statusLabel.setText("Loading users...");
-        String filter = filterBox.getValue() == null ? "all" : filterBox.getValue().toLowerCase();
+        String filter = selectedFilter();
         String search = searchField.getText() == null ? "" : searchField.getText().trim();
         runTask("Could not load users.", () -> adminUserService.fetchUsers(filter, search), result -> {
             JsonNode users = result.path("users");
             System.out.println("First user raw: " + (users.isArray() && users.size() > 0 ? users.get(0).toString() : "none"));
-            usersTable.setItems(users.isArray()
-                    ? FXCollections.observableArrayList(users)
-                    : FXCollections.observableArrayList());
+            java.util.List<JsonNode> userList = new java.util.ArrayList<>();
+            if (users.isArray()) {
+                users.forEach(userList::add);
+            }
+            usersTable.setItems(FXCollections.observableArrayList(userList));
             JsonNode moderation = result.path("moderation");
             policyLabel.setText(String.format(
                     "Automatic inactivity policy: warning 1 after %s day(s), warning 2 after %s more day(s), " +
