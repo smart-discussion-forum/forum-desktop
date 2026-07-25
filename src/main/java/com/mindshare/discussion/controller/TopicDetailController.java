@@ -5,7 +5,6 @@ import com.mindshare.discussion.model.Post;
 import com.mindshare.discussion.model.Topic;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mindshare.auth.model.UserSession;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
