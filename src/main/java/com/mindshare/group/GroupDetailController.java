@@ -11,18 +11,25 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableCell;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class GroupDetailController {
 
     @FXML private Label groupNameLabel;
-    @FXML private TextField searchField;
-    @FXML private ListView<Topic> topicListView;
+    @FXML private TableView<Topic> topicTableView;
+    @FXML private TableColumn<Topic, String> topicColumn;
+    @FXML private TableColumn<Topic, String> categoryColumn;
+    @FXML private TableColumn<Topic, String> creatorColumn;
+    @FXML private TableColumn<Topic, Number> repliesColumn;
+    @FXML private TableColumn<Topic, String> latestColumn;
+    @FXML private TableColumn<Topic, Void> actionColumn;
     @FXML private Button createTopicButton;
-    @FXML private Button groupChatButton;
     @FXML private Button backButton;
 
     private Group currentGroup;
@@ -39,34 +46,54 @@ public class GroupDetailController {
     }
 
     private void setupTopicListView() {
-        // Format the topics to display cleanly like on the web: "Title [Category] (X posts)"
-        topicListView.setCellFactory(param -> new ListCell<>() {
+        topicColumn.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleStringProperty(data.getValue().getTitle()));
+
+        categoryColumn.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleStringProperty(
+                        data.getValue().getCategory() != null ? data.getValue().getCategory() : "General"));
+
+        creatorColumn.setCellValueFactory(data -> {
+            Topic.Creator creator = data.getValue().getCreator();
+            return new javafx.beans.property.SimpleStringProperty(creator != null ? creator.getName() : "Unknown");
+        });
+
+        repliesColumn.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleIntegerProperty(data.getValue().getPostsCount()));
+
+        latestColumn.setCellValueFactory(data -> {
+            Topic.LatestPost latest = data.getValue().getLatestPost();
+            return new javafx.beans.property.SimpleStringProperty(latest != null ? latest.getContent() : "No replies yet");
+        });
+
+        actionColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button openButton = new Button("Open Thread");
+
+            {
+                openButton.setOnAction(e -> {
+                    Topic topic = getTableView().getItems().get(getIndex());
+                    openTopicDetail(topic);
+                });
+            }
+
             @Override
-            protected void updateItem(Topic topic, boolean empty) {
-                super.updateItem(topic, empty);
-                if (empty || topic == null) {
-                    setText(null);
-                } else {
-                    String categoryStr = (topic.getCategory() != null && !topic.getCategory().isBlank())
-                            ? " [" + topic.getCategory() + "]"
-                            : "";
-                    int postCount = topic.getPostsCount();
-                    setText(topic.getTitle() + categoryStr + " (" + postCount + " posts)");
-                }
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : openButton);
             }
         });
 
-        topicListView.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
-                Topic selected = topicListView.getSelectionModel().getSelectedItem();
-                if (selected != null) {
-                    openTopicDetail(selected);
+        topicTableView.setRowFactory(tv -> {
+            TableRow<Topic> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 1 && !row.isEmpty()) {
+                    openTopicDetail(row.getItem());
                 }
-            }
+            });
+            return row;
         });
     }
-
-    private void openTopicDetail(Topic topic) {
+        private void openTopicDetail(Topic topic) {
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/com/mindshare/discussion/TopicDetailView.fxml"));
@@ -75,7 +102,7 @@ public class GroupDetailController {
             com.mindshare.discussion.controller.TopicDetailController controller = loader.getController();
             controller.setTopic(topic);
 
-            Stage stage = (Stage) topicListView.getScene().getWindow();
+            Stage stage = (Stage) topicTableView.getScene().getWindow();
             com.mindshare.utils.SceneUtils.switchScene(stage, topicDetailRoot);
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,7 +129,7 @@ public class GroupDetailController {
 
         fetchTask.setOnSucceeded(event -> {
             currentTopics = fetchTask.getValue();
-            topicListView.setItems(FXCollections.observableArrayList(currentTopics));
+            topicTableView.setItems(FXCollections.observableArrayList(currentTopics));
         });
 
         fetchTask.setOnFailed(event -> fetchTask.getException().printStackTrace());
@@ -111,63 +138,30 @@ public class GroupDetailController {
     }
 
     @FXML
-    private void handleSearch(ActionEvent event) {
-        String query = searchField.getText() == null ? "" : searchField.getText().trim().toLowerCase();
-        if (query.isBlank()) {
-            topicListView.setItems(FXCollections.observableArrayList(currentTopics));
-            return;
-        }
-
-        List<Topic> filtered = currentTopics.stream()
-                .filter(topic -> topic.getTitle() != null && topic.getTitle().toLowerCase().contains(query))
-                .toList();
-        topicListView.setItems(FXCollections.observableArrayList(filtered));
-    }
-
-    @FXML
     private void handleCreateTopic(ActionEvent event) {
         if (currentGroup == null) return;
 
-        // Prompt 1: Topic Title
-        TextInputDialog titleDialog = new TextInputDialog();
-        titleDialog.setTitle("Create New Topic");
-        titleDialog.setHeaderText("Create Topic for " + currentGroup.getName());
-        titleDialog.setContentText("Topic title:");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/group/CreateTopicView.fxml"));
+            Parent root = loader.load();
 
-        Optional<String> titleResult = titleDialog.showAndWait();
-        if (titleResult.isEmpty() || titleResult.get().isBlank()) {
-            return;
+            CreateTopicController controller = loader.getController();
+            controller.setGroup(currentGroup);
+
+            Stage stage = (Stage) createTopicButton.getScene().getWindow();
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        // Prompt 2: Optional Category
-        TextInputDialog categoryDialog = new TextInputDialog();
-        categoryDialog.setTitle("Create New Topic");
-        categoryDialog.setHeaderText("Add Category");
-        categoryDialog.setContentText("Category (optional):");
-
-        Optional<String> categoryResult = categoryDialog.showAndWait();
-        String category = categoryResult.isPresent() ? categoryResult.get().trim() : null;
-
-        Task<JsonNode> task = new Task<>() {
-            @Override
-            protected JsonNode call() throws Exception {
-                return new com.mindshare.api.GroupTopicService().createTopic(
-                        currentGroup.getId(),
-                        titleResult.get().trim(),
-                        category
-                );
-            }
-        };
-
-        task.setOnSucceeded(workerEvent -> loadTopics()); // Refresh list upon creation
-        task.setOnFailed(workerEvent -> workerEvent.getSource().getException().printStackTrace());
-        new Thread(task).start();
     }
 
+
+
     @FXML
-    private void handleGroupChat(ActionEvent event) {
+    private void handleBack(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/chat/ChatView.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/mindshare/chat/ChatView.fxml"));
             Parent root = loader.load();
 
             com.mindshare.chat.ChatController controller = loader.getController();
@@ -175,21 +169,8 @@ public class GroupDetailController {
                 controller.setGroupId(currentGroup.getId());
             }
 
-            Stage stage = (Stage) groupChatButton.getScene().getWindow();
-            com.mindshare.utils.SceneUtils.switchScene(stage, root);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleBack(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/mindshare/group/MyGroupsView.fxml"));
-            Parent groupsRoot = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
-            com.mindshare.utils.SceneUtils.switchScene(stage, groupsRoot);
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }

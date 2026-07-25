@@ -113,6 +113,7 @@ public class BrowseGroupsController {
                 VBox info = new VBox(4, name, desc, members);
 
                 Button joinButton = new Button("Join");
+                joinButton.setStyle("-fx-background-color: #3b5f8a; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 6 20; -fx-font-size: 13px;");
                 joinButton.setOnAction(ev -> handleJoin(group));
 
                 HBox row = new HBox(15, info, joinButton);

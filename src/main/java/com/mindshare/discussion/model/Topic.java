@@ -16,6 +16,10 @@ public class Topic {
 
     private Creator creator;
 
+    @JsonProperty("latest_post")
+    private LatestPost latestPost;
+
+
     public Topic() {
     } // needed for Jackson
 
@@ -67,6 +71,14 @@ public class Topic {
         this.creator = creator;
     }
 
+    public LatestPost getLatestPost() {
+        return latestPost;
+    }
+
+    public void setLatestPost(LatestPost latestPost) {
+        this.latestPost = latestPost;
+    }
+
     @Override
     public String toString() {
         String cat = category != null ? category : "Uncategorized";
@@ -78,10 +90,31 @@ public class Topic {
         private int id;
         private String name;
 
-        public int getId() { return id; }
-        public void setId(int id) { this.id = id; }
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+    // Holds the latest post summary: {"content":..,"author":..}
+    public static class LatestPost {
+        private String content;
+        private String author;
+
+        public String getContent() { return content; }
+        public void setContent(String content) { this.content = content; }
+        public String getAuthor() { return author; }
+        public void setAuthor(String author) { this.author = author; }
     }
 }
 

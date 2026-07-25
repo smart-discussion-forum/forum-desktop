@@ -277,3 +277,10 @@
 .scroll-pane > .corner {
     -fx-background-color: transparent;
 }
+#topicTable .table-cell {
+    -fx-text-fill: #1a1a1a;
+}
+#topicTable .column-header .label {
+    -fx-text-fill: #1a1a1a;
+    -fx-font-weight: bold;
+}
