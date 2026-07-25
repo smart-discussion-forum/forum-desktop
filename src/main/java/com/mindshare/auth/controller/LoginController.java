@@ -56,9 +56,12 @@ public class LoginController{
 
                 System.out.println("Login successful. Token stored for: " + userName);
 
-                java.net.URL dashboardUrl = getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml");
+                String dashboardPath = userRole.equalsIgnoreCase("admin")
+                        ? "/com/mindshare/admin/AdminLandingView.fxml"
+                        : "/com/mindshare/dashboard/DashboardView.fxml";
+                java.net.URL dashboardUrl = getClass().getResource(dashboardPath);
 
-                //Navigating to the dashboard screen
+                //Navigating to the dashboard screen (admins go straight to the admin dashboard)
                 javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(dashboardUrl);
                 javafx.scene.Parent dashboardRoot = loader.load();
                 javafx.stage.Stage stage = (javafx.stage.Stage) loginButton.getScene().getWindow();

@@ -266,7 +266,9 @@ public class ChatController {
     @FXML
     private void handleBack(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml"));
+            boolean isAdmin = "admin".equalsIgnoreCase(UserSession.getUserRole());
+            String path = isAdmin ? "/com/mindshare/admin/AdminLandingView.fxml" : "/com/mindshare/dashboard/DashboardView.fxml";
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
             Parent root = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
             com.mindshare.utils.SceneUtils.switchScene(stage, root);

@@ -7,7 +7,7 @@ package com.mindshare.database;
  //SDD Section 3.1.1- Data Layer
 public class SQLiteConnection {
     //Stored alongside the running app(mindshare-local.db)
-    private static final String DB_URL = "JDBC:sqlite:mindshare-local.db";
+    private static final String DB_URL = "jdbc:sqlite:mindshare-local.db";
 
     private static Connection connection;
 

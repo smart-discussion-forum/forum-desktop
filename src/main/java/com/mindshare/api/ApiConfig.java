@@ -12,6 +12,11 @@ public final class ApiConfig {
         return BASE_URL;
     }
 
+    /** Compatibility alias used by the existing local MessageService. */
+    public static String apiBaseUrl() {
+        return getBaseUrl();
+    }
+
     private static String resolveBaseUrl() {
         String configured = System.getProperty("mindshare.api.base-url");
         if (configured == null || configured.isBlank()) {

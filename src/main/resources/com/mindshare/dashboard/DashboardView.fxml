@@ -18,6 +18,5 @@
     <Button fx:id="groupChatButton" text="My Groups" onAction="#handleGroupChat" prefWidth="180"/>
     <Button fx:id="quizButton" text="Quizzes" onAction="#handleQuiz" prefWidth="180"/>
     <Button fx:id="recommendationsButton" text="Recommendations" onAction="#handleRecommendations" prefWidth="180"/>
-    <Button fx:id="statisticsButton" text="Statistics" onAction="#handleStatistics" prefWidth="180"/>
     <Button fx:id="profileButton" text="Profile" onAction="#handleProfile" prefWidth="180"/>
 </VBox>
