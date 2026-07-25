@@ -8,24 +8,26 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" spacing="15" xmlns="http://javafx.com/javafx"
+<VBox alignment="TOP_CENTER" spacing="18" xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.mindshare.discussion.controller.TopicDetailController">
+      fx:controller="com.mindshare.discussion.controller.TopicDetailController"
+      style="-fx-background-color: #e9ecef;">
     <padding>
-        <Insets top="30" right="30" bottom="30" left="30"/>
+        <Insets top="30" right="40" bottom="30" left="40"/>
     </padding>
 
-    <Label fx:id="topicTitleLabel" styleClass="screen-title"/>
+    <Label fx:id="topicTitleLabel" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;"/>
 
-    <ListView fx:id="postsListView" prefWidth="450" prefHeight="220"/>
+    <ListView fx:id="postsListView" prefWidth="700" prefHeight="380"
+              style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0;"/>
 
-    <TextArea fx:id="replyField" promptText="Write a reply..." prefWidth="450" prefHeight="60"/>
+    <TextArea fx:id="replyField" promptText="Write a reply..." prefWidth="700" prefHeight="70"
+              style="-fx-background-radius: 12; -fx-text-fill: #1a1a1a;" wrapText="true"/>
 
-    <HBox spacing="10" alignment="CENTER">
-        <Button fx:id="sendButton" text="Send" onAction="#handleSend"/>
-        <Button fx:id="refreshButton" text="Refresh" onAction="#handleRefresh"/>
-        <Button fx:id="exportButton" text="Export Discussion" onAction="#handleExport"/>
+    <HBox spacing="12" alignment="CENTER_RIGHT" prefWidth="700">
+        <Button fx:id="backButton" text="Back to Topics" onAction="#handleBack"
+                style="-fx-background-color: #f1f3f5; -fx-background-radius: 20; -fx-padding: 8 20; -fx-text-fill: #1a1a1a;"/>
+        <Button fx:id="sendButton" text="Send" onAction="#handleSend"
+                style="-fx-background-color: #3b5f8a; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 8 26; -fx-font-size: 14px;"/>
     </HBox>
-
-    <Button fx:id="backButton" text="Back to Topics" onAction="#handleBack"/>
 </VBox>

@@ -13,9 +13,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import com.mindshare.auth.model.UserSession;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 public class ChatController {
 
@@ -24,7 +29,7 @@ public class ChatController {
     @FXML private Button backButton;
     @FXML private Label activeGroupLabel;
     @FXML private Button topicsButton;
-    @FXML private ListView<String> chatListView;
+    @FXML private ListView<ChatMessage> chatListView;
     @FXML private TextField messageField;
     @FXML private Button sendButton;
 
@@ -35,8 +40,9 @@ public class ChatController {
 
     @FXML
     public void initialize() {
-        loadUserGroups();
 
+        loadUserGroups();
+        setupChatCellFactory();
         groupsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldGroup, newGroup) -> {
             if (newGroup != null && newGroup.getId() != currentGroupId) {
                 setGroupId(newGroup.getId());
@@ -106,8 +112,8 @@ public class ChatController {
         thread.start();
     }
 
-    private List<String> parseMessages(JsonNode root) {
-        List<String> result = new ArrayList<>();
+    private List<ChatMessage> parseMessages(JsonNode root) {
+        List<ChatMessage> result = new ArrayList<>();
         if (root == null) return result;
 
         JsonNode items = root.isArray() ? root
@@ -116,29 +122,27 @@ public class ChatController {
                     : root;
 
         if (!items.isArray()) return result;
+        String currentUserName = UserSession.getUserName();
+
 
         for (JsonNode item : items) {
-            result.add(formatMessage(item));
+            String sender = firstNonBlank(
+                    item.path("sender").path("name").asText(""),
+                    item.path("user").path("name").asText(""),
+                    item.path("sender_name").asText(""),
+                    item.path("user_name").asText(""),
+                    item.path("author").asText("")
+            );
+            String content = firstNonBlank(
+                    item.path("message").asText(""),
+                    item.path("content").asText(""),
+                    item.path("text").asText("")
+            );
+            boolean mine = currentUserName != null && currentUserName.equalsIgnoreCase(sender);
+            result.add(new ChatMessage(sender, content, mine));
         }
         return result;
     }
-
-    private String formatMessage(JsonNode item) {
-        String sender = firstNonBlank(
-                item.path("user").path("name").asText(""),
-                item.path("sender_name").asText(""),
-                item.path("user_name").asText(""),
-                item.path("author").asText("")
-        );
-        String content = firstNonBlank(
-                item.path("message").asText(""),
-                item.path("content").asText(""),
-                item.path("text").asText("")
-        );
-        if (sender.isBlank()) return content;
-        return sender + ": " + content;
-    }
-
     private String firstNonBlank(String... values) {
         for (String v : values) {
             if (v != null && !v.isBlank()) return v;
@@ -165,7 +169,7 @@ public class ChatController {
                 }
             };
             task.setOnSucceeded(e -> {
-                chatListView.getItems().add("Me: " + trimmed);
+                chatListView.getItems().add(new ChatMessage(UserSession.getUserName(), trimmed, true));
                 messageField.clear();
             });
             task.setOnFailed(e -> {
@@ -210,6 +214,53 @@ public class ChatController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void setupChatCellFactory() {
+        chatListView.setCellFactory(list -> new ListCell<>() {
+            @Override
+            protected void updateItem(ChatMessage msg, boolean empty) {
+                super.updateItem(msg, empty);
+                if (empty || msg == null) {
+                    setGraphic(null);
+                    setText(null);
+                    return;
+                }
+
+                Label content = new Label(msg.getContent());
+                content.setWrapText(true);
+                content.setMaxWidth(320);
+                content.setStyle("-fx-text-fill: white; -fx-font-size: 13px;");
+
+                VBox bubble = new VBox(content);
+                bubble.setPadding(new Insets(10, 14, 10, 14));
+                bubble.setStyle("-fx-background-radius: 14; -fx-background-color: "
+                        + (msg.isMine() ? "#3b82f6" : "#22c55e") + ";");
+
+                VBox column = new VBox(4);
+                if (!msg.isMine()) {
+                    Label sender = new Label(msg.getSender());
+                    sender.setStyle("-fx-text-fill: #6c757d; -fx-font-size: 11px;");
+                    column.getChildren().add(sender);
+                } else {
+                    Label youLabel = new Label("You");
+                    youLabel.setStyle("-fx-text-fill: #6c757d; -fx-font-size: 11px;");
+                    HBox youRow = new HBox(youLabel);
+                    youRow.setAlignment(Pos.CENTER_RIGHT);
+                    column.getChildren().add(youRow);
+                }
+                column.getChildren().add(bubble);
+                column.setAlignment(msg.isMine() ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
+
+                HBox row = new HBox(column);
+                row.setAlignment(msg.isMine() ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
+                row.setPadding(new Insets(4, 8, 4, 8));
+
+                setGraphic(row);
+                setText(null);
+                setStyle("-fx-background-color: transparent;");
+            }
+        });
     }
 
     @FXML
