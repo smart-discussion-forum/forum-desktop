@@ -25,9 +25,6 @@ public class DashboardController {
         private Button recommendationsButton;
 
         @FXML
-        private Button statisticsButton;
-
-        @FXML
         private Button profileButton;
 
         @FXML
@@ -35,13 +32,8 @@ public class DashboardController {
             welcomeLabel.setText("Welcome, " + UserSession.getUserName() + " (" + UserSession.getUserRole() + ")");
             String role = UserSession.getUserRole();
 
-                boolean isAdmin = role.equalsIgnoreCase("admin");
                 boolean isLecturer = role.equalsIgnoreCase("lecturer");
                 boolean isStudent = role.equalsIgnoreCase("student");
-
-            //Statistics Button visible to admins
-                statisticsButton.setVisible(isAdmin);
-                statisticsButton.setManaged(isAdmin);
 
                 //Quiz button label (lectures configure, students take)
                quizButton.setVisible(isStudent || isLecturer);
@@ -68,11 +60,6 @@ public class DashboardController {
         @FXML
         private void handleRecommendations(ActionEvent event) {
                 navigateTo("/com/mindshare/recommendation/RecommendationView.fxml", recommendationsButton);
-        }
-
-        @FXML
-        private void handleStatistics(ActionEvent event) {
-                navigateTo("/com/mindshare/admin/AdminDashboardView.fxml", statisticsButton);
         }
 
         @FXML

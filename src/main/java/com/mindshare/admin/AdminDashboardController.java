@@ -1,142 +1,169 @@
 package com.mindshare.admin;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.mindshare.api.ModerationService;
-import javafx.concurrent.Task;
+import com.mindshare.api.AdminUserService;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.util.Optional;
 
 public class AdminDashboardController {
-
     @FXML private Label statusLabel;
-    @FXML private ListView<String> userListView;
+    @FXML private Label policyLabel;
+    @FXML private TextField searchField;
+    @FXML private ToggleButton filterAll;
+    @FXML private ToggleButton filterActive;
+    @FXML private ToggleButton filterBlacklisted;
+    @FXML private ToggleButton filterWarned;
+    @FXML private TableView<JsonNode> usersTable;
+    @FXML private TableColumn<JsonNode, String> nameColumn;
+    @FXML private TableColumn<JsonNode, String> emailColumn;
+    @FXML private TableColumn<JsonNode, String> roleColumn;
+    @FXML private TableColumn<JsonNode, String> activeColumn;
+    @FXML private TableColumn<JsonNode, String> statusColumn;
+    @FXML private TableColumn<JsonNode, String> manualColumn;
+    @FXML private TableColumn<JsonNode, String> automaticColumn;
+    @FXML private Button runCheckButton;
     @FXML private Button warningButton;
     @FXML private Button blacklistButton;
+    @FXML private Button reinstateButton;
     @FXML private Button statisticsButton;
     @FXML private Button backButton;
 
-    private final ModerationService moderationService = new ModerationService();
+    private final AdminUserService adminUserService = new AdminUserService();
 
     @FXML
     public void initialize() {
-        loadBlacklist();
+        nameColumn.setCellValueFactory(data -> value(data.getValue(), "name"));
+        emailColumn.setCellValueFactory(data -> value(data.getValue(), "email"));
+        roleColumn.setCellValueFactory(data -> value(data.getValue(), "role"));
+        activeColumn.setCellValueFactory(data -> value(data.getValue(), "last_active", "Never"));
+        statusColumn.setCellValueFactory(data -> value(data.getValue(), "status", "Active"));
+        manualColumn.setCellValueFactory(data -> value(data.getValue(), "manual_warnings_count", "0"));
+        automaticColumn.setCellValueFactory(data -> value(data.getValue(), "auto_warnings_count", "0"));
+        loadUsers();
     }
 
-    private void loadBlacklist() {
-        statusLabel.setText("Loading blacklist...");
-        Task<JsonNode> task = new Task<>() {
-            @Override
-            protected JsonNode call() throws Exception {
-                return moderationService.fetchBlacklist();
-            }
-        };
+    private ReadOnlyStringWrapper value(JsonNode node, String field) {
+        return value(node, field, "");
+    }
 
-        task.setOnSucceeded(event -> {
-            JsonNode response = task.getValue();
-            JsonNode entries = response.isArray() ? response : response.path("blacklist");
-            if (!entries.isArray()) {
-                userListView.setItems(FXCollections.observableArrayList());
-                statusLabel.setText("No active blacklist entries.");
-                return;
-            }
+    private ReadOnlyStringWrapper value(JsonNode node, String field, String fallback) {
+        String text = node.path(field).isNull() ? fallback : node.path(field).asText(fallback);
+        return new ReadOnlyStringWrapper(text);
+    }
 
-            javafx.collections.ObservableList<String> rows = FXCollections.observableArrayList();
-            for (JsonNode entry : entries) {
-                String name = entry.path("user").path("name").asText("Unknown");
-                String reason = entry.path("Reason").asText(entry.path("reason").asText(""));
-                rows.add(name + " - " + reason);
+    @FXML private void handleSearch(ActionEvent event) { loadUsers(); }
+
+    @FXML private void handleFilter(ActionEvent event) {
+        if (!filterAll.isSelected() && !filterActive.isSelected()
+                && !filterBlacklisted.isSelected() && !filterWarned.isSelected()) {
+            filterAll.setSelected(true);
+        }
+        loadUsers();
+    }
+
+    private String selectedFilter() {
+        if (filterActive.isSelected()) return "active";
+        if (filterBlacklisted.isSelected()) return "blacklisted";
+        if (filterWarned.isSelected()) return "warned";
+        return "all";
+    }
+
+    private void loadUsers() {
+        statusLabel.setText("Loading users...");
+        String filter = selectedFilter();
+        String search = searchField.getText() == null ? "" : searchField.getText().trim();
+        runTask("Could not load users.", () -> adminUserService.fetchUsers(filter, search), result -> {
+            JsonNode users = result.path("users");
+            System.out.println("First user raw: " + (users.isArray() && users.size() > 0 ? users.get(0).toString() : "none"));
+            java.util.List<JsonNode> userList = new java.util.ArrayList<>();
+            if (users.isArray()) {
+                users.forEach(userList::add);
             }
-            userListView.setItems(rows);
-            statusLabel.setText(rows.isEmpty() ? "No active blacklist entries." : "Blacklist loaded.");
+            usersTable.setItems(FXCollections.observableArrayList(userList));
+            JsonNode moderation = result.path("moderation");
+            policyLabel.setText(String.format(
+                    "Automatic inactivity policy: warning 1 after %s day(s), warning 2 after %s more day(s), " +
+                            "blacklist after %s day(s), duration %s day(s).",
+                    moderation.path("first_warning_days").asText("-"),
+                    moderation.path("second_warning_days").asText("-"),
+                    moderation.path("blacklist_after_days").asText("-"),
+                    moderation.path("blacklist_duration_days").asText("-")));
+            statusLabel.setText(users.isArray() && users.size() > 0
+                    ? users.size() + " user(s) loaded."
+                    : "No users found.");
         });
+    }
 
-        task.setOnFailed(event -> {
-            Throwable failure = task.getException();
-            statusLabel.setText(failure != null && failure.getMessage() != null
-                    ? failure.getMessage()
-                    : "Could not load blacklist.");
-            if (failure != null) {
-                failure.printStackTrace();
-            }
-        });
-
-        new Thread(task).start();
+    @FXML
+    private void handleRunInactivityCheck(ActionEvent event) {
+        runTask("Inactivity check failed.", adminUserService::runInactivityCheck,
+                result -> { statusLabel.setText(result.path("message").asText("Inactivity check completed.")); loadUsers(); });
     }
 
     @FXML
     private void handleWarning(ActionEvent event) {
-        Optional<String> userIdInput = prompt("Issue Warning", "User ID", "Enter the user ID to warn:");
-        Optional<String> reasonInput = prompt("Issue Warning", "Reason", "Enter the warning reason:");
-        if (userIdInput.isEmpty() || reasonInput.isEmpty()) {
-            return;
-        }
-
-        try {
-            int userId = Integer.parseInt(userIdInput.get().trim());
-            String reason = reasonInput.get().trim();
-            statusLabel.setText("Issuing warning...");
-
-            Task<JsonNode> task = new Task<>() {
-                @Override
-                protected JsonNode call() throws Exception {
-                    return moderationService.issueWarning(userId, reason);
-                }
-            };
-
-            task.setOnSucceeded(e -> {
-                statusLabel.setText(task.getValue().path("message").asText("Warning issued."));
-                loadBlacklist();
-            });
-
-            task.setOnFailed(e -> {
-                Throwable failure = task.getException();
-                statusLabel.setText(failure != null && failure.getMessage() != null
-                        ? failure.getMessage()
-                        : "Could not issue warning.");
-            });
-
-            new Thread(task).start();
-        } catch (NumberFormatException ex) {
-            statusLabel.setText("User ID must be a number.");
-        }
+        JsonNode user = selectedUser();
+        if (user == null) return;
+        Optional<String> reason = prompt("Issue Warning", "Reason", "Enter the warning reason:");
+        if (reason.isEmpty() || reason.get().isBlank()) return;
+        runTask("Issuing warning...", () -> adminUserService.warn(user.path("id").asInt(), reason.get().trim()),
+                result -> { statusLabel.setText("Warning issued to " + user.path("name").asText() + "."); loadUsers(); });
     }
 
     @FXML
     private void handleBlacklist(ActionEvent event) {
-        Optional<String> userIdInput = prompt("Blacklist User", "User ID", "Enter the user ID to blacklist:");
-        Optional<String> reasonInput = prompt("Blacklist User", "Reason", "Enter the blacklist reason:");
-        if (userIdInput.isEmpty() || reasonInput.isEmpty()) {
-            return;
-        }
-
+        JsonNode user = selectedUser();
+        if (user == null) return;
+        Optional<String> reason = prompt("Blacklist User", "Reason", "Enter the blacklist reason (optional):");
+        if (reason.isEmpty()) return;
+        TextInputDialog durationDialog = new TextInputDialog("30");
+        durationDialog.setTitle("Blacklist User");
+        durationDialog.setHeaderText("Duration in days");
+        durationDialog.setContentText("Enter a number of days:");
+        Optional<String> duration = durationDialog.showAndWait();
+        if (duration.isEmpty()) return;
         try {
-            int userId = Integer.parseInt(userIdInput.get().trim());
-            String reason = reasonInput.get().trim();
-            statusLabel.setText("Blacklisting user...");
-
-            Task<JsonNode> task = new Task<>() {
-                @Override
-                protected JsonNode call() throws Exception {
-                    return moderationService.fetchBlacklist();
-                }
-            };
-
-            task.setOnSucceeded(e -> statusLabel.setText("Use the Laravel web admin for direct blacklist actions."));
-            task.setOnFailed(e -> statusLabel.setText("Could not access blacklist API."));
-            new Thread(task).start();
+            Integer days = Integer.valueOf(duration.get().trim());
+            runTask("Blacklisting user...", () -> adminUserService.blacklist(user.path("id").asInt(), reason.get().trim(), days),
+                    result -> { statusLabel.setText(user.path("name").asText() + " has been blacklisted."); loadUsers(); });
         } catch (NumberFormatException ex) {
-            statusLabel.setText("User ID must be a number.");
+            statusLabel.setText("Duration must be a number.");
         }
+    }
+
+    @FXML
+    private void handleReinstate(ActionEvent event) {
+        JsonNode user = selectedUser();
+        if (user == null) return;
+        runTask("Reinstating user...", () -> adminUserService.reinstate(user.path("id").asInt()),
+                result -> { statusLabel.setText(user.path("name").asText() + " has been reinstated."); loadUsers(); });
+    }
+
+    private JsonNode selectedUser() {
+        JsonNode user = usersTable.getSelectionModel().getSelectedItem();
+        if (user == null) statusLabel.setText("Select a user first.");
+        return user;
+    }
+
+    private void runTask(String failureMessage, IoAction action, SuccessAction success) {
+        Task<JsonNode> task = new Task<>() {
+            @Override protected JsonNode call() throws Exception { return action.run(); }
+        };
+        task.setOnSucceeded(event -> success.accept(task.getValue()));
+        task.setOnFailed(event -> {
+            Throwable failure = task.getException();
+            statusLabel.setText(failure == null || failure.getMessage() == null ? failureMessage : failure.getMessage());
+        });
+        new Thread(task).start();
     }
 
     @FXML
@@ -146,21 +173,16 @@ public class AdminDashboardController {
             Parent root = loader.load();
             Stage stage = (Stage) statisticsButton.getScene().getWindow();
             com.mindshare.utils.SceneUtils.switchScene(stage, root);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     @FXML
     private void handleBack(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml"));
-            Parent root = loader.load();
+            Parent root = FXMLLoader.load(getClass().getResource("/com/mindshare/admin/AdminLandingView.fxml"));
             Stage stage = (Stage) backButton.getScene().getWindow();
             com.mindshare.utils.SceneUtils.switchScene(stage, root);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     private Optional<String> prompt(String title, String header, String content) {
@@ -170,4 +192,7 @@ public class AdminDashboardController {
         dialog.setContentText(content);
         return dialog.showAndWait();
     }
+
+    private interface IoAction { JsonNode run() throws Exception; }
+    private interface SuccessAction { void accept(JsonNode value); }
 }

@@ -91,8 +91,10 @@ public class MyGroupsController {
     @FXML
     private void handleBack(ActionEvent event) {
         try {
+            boolean isAdmin = "admin".equalsIgnoreCase(com.mindshare.auth.model.UserSession.getUserRole());
+            String path = isAdmin ? "/com/mindshare/admin/AdminLandingView.fxml" : "/com/mindshare/dashboard/DashboardView.fxml";
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml"));
+                    getClass().getResource(path));
             Parent dashboardRoot = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
             com.mindshare.utils.SceneUtils.switchScene(stage, dashboardRoot);
