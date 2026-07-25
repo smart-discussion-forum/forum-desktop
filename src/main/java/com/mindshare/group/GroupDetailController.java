@@ -101,6 +101,8 @@ public class GroupDetailController {
 
             com.mindshare.discussion.controller.TopicDetailController controller = loader.getController();
             controller.setTopic(topic);
+            controller.setGroup(currentGroup);
+
 
             Stage stage = (Stage) topicTableView.getScene().getWindow();
             com.mindshare.utils.SceneUtils.switchScene(stage, topicDetailRoot);
