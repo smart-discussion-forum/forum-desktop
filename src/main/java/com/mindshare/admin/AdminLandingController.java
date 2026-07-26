@@ -24,7 +24,7 @@ public class AdminLandingController {
 
     @FXML
     private void handleManageGroups(ActionEvent event) {
-        navigate("/com/mindshare/group/MyGroupsView.fxml", manageGroupsButton);
+        navigate("/com/mindshare/admin/ManageGroupsView.fxml", manageGroupsButton);
     }
 
     private void navigate(String path, Button source) {

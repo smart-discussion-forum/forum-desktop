@@ -8,13 +8,13 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="TOP_LEFT" spacing="15" xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml" fx:controller="com.mindshare.admin.ParticipationStatisticsController">
+      xmlns:fx="http://javafx.com/fxml" fx:controller="com.mindshare.admin.ManageGroupsController">
     <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
 
     <HBox spacing="16" alignment="CENTER_LEFT">
         <VBox spacing="4" HBox.hgrow="ALWAYS">
-            <Label text="Group Statistics" styleClass="screen-title" style="-fx-font-size: 22px;"/>
-            <Label text="Overall activity for each group — posts, topics, and weekly engagement."
+            <Label text="Manage Groups" styleClass="screen-title" style="-fx-font-size: 22px;"/>
+            <Label text="View, edit, and delete groups — same data as the webapp's Manage Groups page."
                    styleClass="group-card-subtitle" wrapText="true"/>
         </VBox>
         <Button fx:id="backButton" text="Back" onAction="#handleBack"/>

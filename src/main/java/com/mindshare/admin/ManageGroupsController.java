@@ -1,16 +1,19 @@
 package com.mindshare.admin;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.mindshare.api.AdminStatisticsService;
+import com.mindshare.api.AdminGroupService;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -19,14 +22,16 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class ParticipationStatisticsController {
+/** Mirrors resources/views/groups/manage.blade.php — same data and actions, on the desktop. */
+public class ManageGroupsController {
     @FXML private Label statusLabel;
     @FXML private TextField searchField;
     @FXML private VBox cardsContainer;
     @FXML private Button backButton;
 
-    private final AdminStatisticsService statisticsService = new AdminStatisticsService();
+    private final AdminGroupService groupService = new AdminGroupService();
     private List<JsonNode> allGroups = new ArrayList<>();
 
     @FXML
@@ -35,8 +40,8 @@ public class ParticipationStatisticsController {
     }
 
     private void loadGroups() {
-        statusLabel.setText("Loading statistics...");
-        runTask("Could not load statistics.", statisticsService::fetchGroupStatistics, result -> {
+        statusLabel.setText("Loading groups...");
+        runTask("Could not load groups.", groupService::fetchManagedGroups, result -> {
             JsonNode groups = result.path("groups");
             allGroups = new ArrayList<>();
             if (groups.isArray()) groups.forEach(allGroups::add);
@@ -60,7 +65,7 @@ public class ParticipationStatisticsController {
     private void renderCards(List<JsonNode> groups) {
         cardsContainer.getChildren().clear();
         if (groups.isEmpty()) {
-            Label empty = new Label("No groups yet. Create a group to start tracking statistics.");
+            Label empty = new Label("No groups yet.");
             empty.getStyleClass().add("group-card-subtitle");
             cardsContainer.getChildren().add(empty);
             return;
@@ -70,7 +75,7 @@ public class ParticipationStatisticsController {
         }
     }
 
-    /** Mirrors resources/views/admin/statistics/index.blade.php's per-group card. */
+    /** Mirrors resources/views/groups/manage.blade.php's table row for one group. */
     private VBox buildGroupCard(JsonNode group) {
         VBox card = new VBox(14);
         card.getStyleClass().add("group-card");
@@ -81,30 +86,25 @@ public class ParticipationStatisticsController {
         creatorLabel.getStyleClass().add("group-card-subtitle");
         VBox titleBox = new VBox(4, nameLabel, creatorLabel);
 
-        Button detailsButton = new Button("View details");
-        detailsButton.setOnAction(e -> openDetail(group.path("id").asInt()));
+        Button statsButton = new Button("Stats");
+        statsButton.setOnAction(e -> openStats(group.path("id").asInt()));
+        Button editButton = new Button("Edit");
+        editButton.setOnAction(e -> handleEdit(group));
+        Button deleteButton = new Button("Delete");
+        deleteButton.setOnAction(e -> handleDelete(group));
 
-        HBox header = new HBox(12, titleBox, spacer(), detailsButton);
+        HBox actions = new HBox(8, statsButton, editButton, deleteButton);
+        HBox header = new HBox(12, titleBox, spacer(), actions);
         header.setAlignment(Pos.TOP_LEFT);
 
         HBox statsRow = new HBox(12,
                 statBox("Members", group.path("member_count").asText("0")),
-                statBox("Topics", group.path("topic_count").asText("0")),
-                statBox("Total posts", group.path("total_posts").asText("0")),
-                statBox("Posts this week", group.path("posts_this_week").asText("0")));
+                statBox("Topics", group.path("topic_count").asText("0")));
         for (var node : statsRow.getChildren()) {
             HBox.setHgrow(node, Priority.ALWAYS);
         }
 
-        Label mostActive = new Label(topicSummary("Most active topic:", group.path("most_active_topic")));
-        Label leastActive = new Label(topicSummary("Least active topic:", group.path("least_active_topic")));
-        mostActive.getStyleClass().add("group-card-subtitle");
-        leastActive.getStyleClass().add("group-card-subtitle");
-        mostActive.setWrapText(true);
-        leastActive.setWrapText(true);
-        HBox topicsRow = new HBox(20, mostActive, leastActive);
-
-        card.getChildren().addAll(header, statsRow, topicsRow);
+        card.getChildren().addAll(header, statsRow);
         return card;
     }
 
@@ -119,20 +119,13 @@ public class ParticipationStatisticsController {
         return box;
     }
 
-    private String topicSummary(String prefix, JsonNode topic) {
-        if (topic == null || topic.isMissingNode() || topic.isNull()) {
-            return prefix + " None yet";
-        }
-        return prefix + " " + topic.path("title").asText() + " (" + topic.path("posts_count").asText("0") + " posts)";
-    }
-
     private Region spacer() {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         return spacer;
     }
 
-    private void openDetail(int groupId) {
+    private void openStats(int groupId) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/admin/GroupStatisticsDetailView.fxml"));
             Parent root = loader.load();
@@ -143,6 +136,39 @@ public class ParticipationStatisticsController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void handleEdit(JsonNode group) {
+        TextInputDialog nameDialog = new TextInputDialog(group.path("name").asText(""));
+        nameDialog.setTitle("Edit Group");
+        nameDialog.setHeaderText("Group name");
+        nameDialog.setContentText("Enter a new name:");
+        Optional<String> name = nameDialog.showAndWait();
+        if (name.isEmpty() || name.get().isBlank()) return;
+
+        TextInputDialog descDialog = new TextInputDialog(group.path("description").asText(""));
+        descDialog.setTitle("Edit Group");
+        descDialog.setHeaderText("Description");
+        descDialog.setContentText("Enter a description (optional):");
+        Optional<String> description = descDialog.showAndWait();
+        if (description.isEmpty()) return;
+
+        runTask("Could not update group.",
+                () -> groupService.updateGroup(group.path("id").asInt(), name.get().trim(), description.get().trim()),
+                result -> { statusLabel.setText("Group updated successfully."); loadGroups(); });
+    }
+
+    private void handleDelete(JsonNode group) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                "Delete \"" + group.path("name").asText("") + "\"? This cannot be undone.", ButtonType.YES, ButtonType.NO);
+        confirm.setTitle("Delete Group");
+        confirm.setHeaderText(null);
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isEmpty() || result.get() != ButtonType.YES) return;
+
+        runTask("Could not delete group.",
+                () -> groupService.deleteGroup(group.path("id").asInt()),
+                r -> { statusLabel.setText("Group deleted successfully."); loadGroups(); });
     }
 
     private void runTask(String failureMessage, IoAction action, SuccessAction success) {
