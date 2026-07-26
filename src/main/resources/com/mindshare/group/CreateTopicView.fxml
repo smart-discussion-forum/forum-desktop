@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" spacing="18" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.mindshare.group.CreateTopicController"
+      style="-fx-background-color: #e9ecef;">
+    <padding>
+        <Insets top="30" right="40" bottom="30" left="40"/>
+    </padding>
+
+    <VBox maxWidth="700" spacing="18"
+          style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+        <padding>
+            <Insets top="30" right="40" bottom="30" left="40"/>
+        </padding>
+
+        <Label fx:id="titleLabel" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;"/>
+
+        <HBox spacing="12" alignment="CENTER">
+            <Button fx:id="backToTopicsButton" text="Back to Topics" onAction="#handleBackToTopics"
+                    style="-fx-background-color: #f1f3f5; -fx-background-radius: 20; -fx-padding: 8 18;"/>
+            <Button fx:id="backToChatButton" text="Back to Chat" onAction="#handleBackToChat"
+                    style="-fx-background-color: #f1f3f5; -fx-background-radius: 20; -fx-padding: 8 18;"/>
+        </HBox>
+
+        <Label text="Title:" style="-fx-font-weight: bold; -fx-text-fill: #1a1a1a;"/>
+        <TextField fx:id="titleField" style="-fx-background-radius: 8; -fx-padding: 10;-fx-text-fill: #1a1a1a; "/>
+
+        <Label text="Category:" style="-fx-font-weight: bold; -fx-text-fill: #1a1a1a;"/>
+        <TextField fx:id="categoryField" style="-fx-background-radius: 8; -fx-padding: 10; -fx-text-fill: #1a1a1a; "/>
+
+        <Label fx:id="statusLabel" style="-fx-text-fill: #c0392b;" visible="false" managed="false"/>
+
+        <HBox alignment="CENTER_RIGHT">
+            <Button fx:id="saveButton" text="Save" onAction="#handleSave"
+                    style="-fx-background-color: #3b5f8a; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 10 26; -fx-font-size: 14px;"/>
+        </HBox>
+    </VBox>
+</VBox>

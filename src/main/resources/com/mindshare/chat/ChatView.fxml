@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.mindshare.chat.ChatController"
+            prefHeight="600.0" prefWidth="900.0" stylesheets="@../style.css">
+
+    <!-- LEFT SIDEBAR: Your Groups Navigation -->
+    <left>
+        <VBox spacing="15.0" style="-fx-background-color: #f4f5f7; -fx-padding: 20;">
+            <children>
+                <Label text="Your Groups" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #172b4d;" />
+
+                <!-- List of Joined Groups -->
+                <ListView fx:id="groupsListView" VBox.vgrow="ALWAYS" style="-fx-background-radius: 8; -fx-border-color: transparent;" />
+
+                <!-- Browse / Discover Groups Button -->
+                <Button fx:id="browseGroupsButton" text="Browse Groups" onAction="#handleBrowseGroups"
+                        maxWidth="1.7976931348623157E308" style="-fx-background-color: #ffffff; -fx-background-radius: 20; -fx-padding: 10 15; -fx-cursor: hand; -fx-font-weight: bold;" />
+
+                <Button fx:id="backButton" text="← Back to Dashboard" onAction="#handleBack"
+                        maxWidth="1.7976931348623157E308" style="-fx-background-color: transparent; -fx-text-fill: #5e6c84; -fx-cursor: hand;" />
+            </children>
+            <prefWidth>240.0</prefWidth>
+        </VBox>
+    </left>
+
+    <!-- CENTER PANE: Active Group Chat & Topics Navigation -->
+    <center>
+        <VBox spacing="15.0" style="-fx-background-color: #ebecf0; -fx-padding: 20;">
+            <children>
+                <!-- Header: Selected Group Name & Topics Button -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <children>
+                        <Label fx:id="activeGroupLabel" text="Select a Group" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #172b4d;" />
+                        <HBox HBox.hgrow="ALWAYS" />
+                        <!-- Topics Button in top right corner -->
+                        <Button fx:id="topicsButton" text="Topics" onAction="#handleViewTopics"
+                                style="-fx-background-color: #ffffff; -fx-background-radius: 20; -fx-padding: 8 20; -fx-font-weight: bold; -fx-cursor: hand;" />
+                    </children>
+                </HBox>
+
+                <!-- Chat Messages Stream -->
+                <ListView fx:id="chatListView" VBox.vgrow="ALWAYS" style="-fx-background-radius: 10; -fx-border-color: transparent;" />
+
+                <!-- Bottom Bar: Message Input, Exclude Members & Send -->
+                <HBox spacing="10.0" alignment="CENTER">
+                    <children>
+                        <TextField fx:id="messageField" promptText="Type a message..." onAction="#handleSend"
+                                   HBox.hgrow="ALWAYS" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #94a3b8; -fx-background-radius: 10; -fx-padding: 12;" />
+
+                        <!-- NEW: Exclude Members Dropdown -->
+                        <MenuButton fx:id="excludeMembersButton" text="Exclude members"
+                                    style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 10; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px;">
+                            <items>
+                                <!-- CheckMenuItem items will be dynamically loaded from ChatController -->
+                            </items>
+                        </MenuButton>
+
+                        <Button fx:id="sendButton" text="Send" onAction="#handleSend"
+                                style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 12 24; -fx-cursor: hand;" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </center>
+
+</BorderPane>

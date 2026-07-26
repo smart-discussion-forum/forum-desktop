@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_LEFT" spacing="15" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml" fx:controller="com.mindshare.admin.AdminDashboardController">
+    <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+    <fx:define>
+        <ToggleGroup fx:id="filterGroup"/>
+    </fx:define>
+
+    <Label text="Manage Users" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="searchField" promptText="Search by name or email..." prefWidth="340" onAction="#handleSearch"/>
+        <Button text="Search" onAction="#handleSearch"/>
+        <HBox spacing="6">
+            <ToggleButton fx:id="filterAll" text="All" selected="true" toggleGroup="$filterGroup" onAction="#handleFilter" styleClass="filter-pill"/>
+            <ToggleButton fx:id="filterActive" text="Active" toggleGroup="$filterGroup" onAction="#handleFilter" styleClass="filter-pill"/>
+            <ToggleButton fx:id="filterBlacklisted" text="Blacklisted" toggleGroup="$filterGroup" onAction="#handleFilter" styleClass="filter-pill"/>
+            <ToggleButton fx:id="filterWarned" text="Warned" toggleGroup="$filterGroup" onAction="#handleFilter" styleClass="filter-pill"/>
+        </HBox>
+        <Button fx:id="runCheckButton" text="Run inactivity check" onAction="#handleRunInactivityCheck"/>
+    </HBox>
+
+    <VBox spacing="4" styleClass="policy-card">
+        <Label text="Automatic inactivity policy" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+        <Label fx:id="policyLabel" wrapText="true" maxWidth="1100"/>
+    </VBox>
+
+    <Label fx:id="statusLabel" styleClass="admin-status"/>
+
+    <TableView fx:id="usersTable" prefHeight="420" prefWidth="1100" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="nameColumn" text="Name" prefWidth="170"/>
+            <TableColumn fx:id="emailColumn" text="Email" prefWidth="240"/>
+            <TableColumn fx:id="roleColumn" text="Role" prefWidth="110"/>
+            <TableColumn fx:id="activeColumn" text="Last active" prefWidth="160"/>
+            <TableColumn fx:id="statusColumn" text="Status" prefWidth="120"/>
+            <TableColumn fx:id="manualColumn" text="Manual" prefWidth="90"/>
+            <TableColumn fx:id="automaticColumn" text="Auto" prefWidth="90"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button fx:id="warningButton" text="Warn" onAction="#handleWarning"/>
+        <Button fx:id="blacklistButton" text="Blacklist" onAction="#handleBlacklist"/>
+        <Button fx:id="reinstateButton" text="Reinstate" onAction="#handleReinstate"/>
+        <Button fx:id="statisticsButton" text="Statistics" onAction="#handleStatistics"/>
+        <Button fx:id="backButton" text="Back to Dashboard" onAction="#handleBack"/>
+    </HBox>
+</VBox>

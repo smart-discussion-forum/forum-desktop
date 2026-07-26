@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" spacing="15" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.mindshare.group.BrowseGroupsController">
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <Label text="Study Groups" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+    <Label text="Groups you're already part of, and groups you can still join." style="-fx-text-fill: #666;"/>
+
+    <Label fx:id="myGroupsLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+    <ListView fx:id="myGroupsListView" prefWidth="620" prefHeight="180"/>
+
+    <Label fx:id="joinableGroupsLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+    <ListView fx:id="joinableGroupsListView" prefWidth="620" prefHeight="150"/>
+
+    <Label fx:id="statusLabel" style="-fx-text-fill: #c0392b;" visible="false" managed="false"/>
+
+    <Button fx:id="backButton" text="Back to Dashboard" onAction="#handleBack"/>
+</VBox>

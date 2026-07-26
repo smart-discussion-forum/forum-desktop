@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.mindshare.auth.controller.WelcomeController">
+    <VBox spacing="0">
+        <HBox alignment="CENTER_LEFT" spacing="22" style="-fx-background-color: rgba(10, 15, 28, 0.78); -fx-padding: 16 24 16 24;">
+            <Label text="Home" style="-fx-text-fill: rgba(255,255,255,0.92); -fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Label text="Login" style="-fx-text-fill: rgba(255,255,255,0.92); -fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Label text="Register" style="-fx-text-fill: rgba(255,255,255,0.92); -fx-font-size: 18px; -fx-font-weight: bold;"/>
+        </HBox>
+
+        <StackPane VBox.vgrow="ALWAYS" style="-fx-padding: 28;">
+            <VBox alignment="CENTER" spacing="22" styleClass="welcome-card" maxWidth="860">
+                <padding>
+                    <Insets top="44" right="52" bottom="46" left="52"/>
+                </padding>
+
+                <HBox alignment="CENTER_LEFT" spacing="18">
+                    <VBox alignment="CENTER" prefWidth="72" prefHeight="72" style="-fx-background-color: rgba(255,255,255,0.12); -fx-background-radius: 18; -fx-border-color: rgba(255,255,255,0.18); -fx-border-radius: 18;">
+                        <Label text="◌" style="-fx-text-fill: white; -fx-font-size: 22px;"/>
+                    </VBox>
+                    <Label text="MINDSHARE DISCUSSION FORUM" style="-fx-text-fill: #f8fbff; -fx-font-size: 18px; -fx-font-weight: bold; -fx-letter-spacing: 0.12em;"/>
+                </HBox>
+
+                <VBox alignment="CENTER" spacing="14" style="-fx-padding: 12 0 6 0;">
+                    <Label text="Welcome" style="-fx-text-fill: #f8fbff; -fx-font-size: 64px; -fx-font-weight: 800;"/>
+                    <Label text="A clean space for topics, conversations, quizzes, and profile management." wrapText="true"
+                           style="-fx-text-fill: rgba(248,251,255,0.86); -fx-font-size: 22px; -fx-text-alignment: center;"/>
+                </VBox>
+
+                <HBox alignment="CENTER" spacing="18">
+                    <Button fx:id="viewRulesButton" text="View Rules" onAction="#handleViewRules" prefWidth="160" styleClass="chat-btn"/>
+                    <Button fx:id="loginButton" text="Login" onAction="#handleLogin" prefWidth="130"/>
+                    <Button fx:id="registerButton" text="Register" onAction="#handleRegister" prefWidth="145"/>
+                </HBox>
+            </VBox>
+        </StackPane>
+    </VBox>
+</StackPane>

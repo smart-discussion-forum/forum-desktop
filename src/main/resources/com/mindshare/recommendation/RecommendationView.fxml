@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.mindshare.recommendation.RecommendationController">
+    <ScrollPane fitToWidth="true">
+        <VBox spacing="20" styleClass="page-card">
+            <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
+
+            <!-- Header -->
+            <HBox spacing="20" alignment="TOP_LEFT">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Recommended for you" styleClass="screen-title"/>
+                    <Label text="Personalized topics from your groups and the hottest conversations across the platform."
+                           wrapText="true"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox spacing="12" alignment="CENTER">
+                    <VBox alignment="CENTER" styleClass="count-badge">
+                        <Label text="PERSONALIZED" styleClass="badge-label"/>
+                        <Label fx:id="personalizedCountLabel" text="0" styleClass="badge-count"/>
+                    </VBox>
+                    <VBox alignment="CENTER" styleClass="count-badge">
+                        <Label text="TRENDING" styleClass="badge-label"/>
+                        <Label fx:id="trendingCountLabel" text="0" styleClass="badge-count"/>
+                    </VBox>
+                </HBox>
+            </HBox>
+
+            <Label fx:id="statusLabel"/>
+
+            <!-- Personalized section -->
+            <VBox spacing="12">
+                <Label text="Personalized suggestions" styleClass="section-title"/>
+                <FlowPane fx:id="personalizedContainer" hgap="16" vgap="16"/>
+            </VBox>
+
+            <!-- Trending section -->
+            <VBox spacing="12">
+                <Label text="Trending this week" styleClass="section-title"/>
+                <FlowPane fx:id="trendingContainer" hgap="16" vgap="16"/>
+            </VBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button fx:id="refreshButton" text="Refresh" onAction="#handleRefresh"/>
+                <Button fx:id="backButton" text="Back to Dashboard" onAction="#handleBack"/>
+            </HBox>
+        </VBox>
+    </ScrollPane>
+</StackPane>
