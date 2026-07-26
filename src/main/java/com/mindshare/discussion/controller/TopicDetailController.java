@@ -3,8 +3,11 @@ package com.mindshare.discussion.controller;
 import com.mindshare.api.PostService;
 import com.mindshare.discussion.model.Post;
 import com.mindshare.discussion.model.Topic;
+import com.mindshare.group.Group;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,7 +23,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import com.mindshare.group.Group;
 
 public class TopicDetailController {
     @FXML private Label topicTitleLabel;
@@ -28,6 +30,7 @@ public class TopicDetailController {
     @FXML private TextArea replyField;
     @FXML private Button sendButton;
     @FXML private Button backButton;
+    @FXML private Button exportPdfBtn;
 
     private Topic currentTopic;
     private Group currentGroup;
@@ -43,6 +46,7 @@ public class TopicDetailController {
         setupCellFactory();
         loadPosts();
     }
+
     public void setGroup(Group group) {
         this.currentGroup = group;
     }
@@ -81,7 +85,6 @@ public class TopicDetailController {
     private String formatDate(String rawIso) {
         if (rawIso == null || rawIso.isBlank()) return "";
         try {
-            // Laravel sends microsecond precision e.g. 2026-07-08T06:49:44.000000Z
             Instant instant = Instant.parse(rawIso);
             return DISPLAY_FORMAT.format(instant);
         } catch (Exception e) {
@@ -90,6 +93,8 @@ public class TopicDetailController {
     }
 
     private void loadPosts() {
+        if (currentTopic == null) return;
+
         javafx.concurrent.Task<List<Post>> task = new javafx.concurrent.Task<>() {
             @Override
             protected List<Post> call() throws Exception {
@@ -139,6 +144,23 @@ public class TopicDetailController {
         });
         task.setOnFailed(e -> task.getException().printStackTrace());
         new Thread(task).start();
+    }
+
+    @FXML
+    private void handleExportPdf(ActionEvent event) {
+        System.out.println("Export as PDF clicked!");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/discussion/ExportDiscussionView.fxml"));
+            Parent root = loader.load();
+
+            ExportDiscussionController exportController = loader.getController();
+            exportController.setDiscussion(currentTopic, postsListView.getItems());
+
+            Stage stage = (Stage) exportPdfBtn.getScene().getWindow();
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

@@ -27,6 +27,10 @@ public class GroupTopicService {
 
             try (CloseableHttpResponse response = client.execute(request)) {
                 String body = response.getEntity() == null ? "" : new String(response.getEntity().getContent().readAllBytes());
+                if (response.getCode() >= 400) {
+                    throw new IOException("HTTP " + response.getCode() + " calling GET /groups/" + groupId + "/topics"
+                            + (body.isBlank() ? "" : ": " + body));
+                }
                 return objectMapper.readTree(body);
             }
         }

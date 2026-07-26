@@ -29,5 +29,8 @@
                 style="-fx-background-color: #f1f3f5; -fx-background-radius: 20; -fx-padding: 8 20; -fx-text-fill: #1a1a1a;"/>
         <Button fx:id="sendButton" text="Send" onAction="#handleSend"
                 style="-fx-background-color: #3b5f8a; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 8 26; -fx-font-size: 14px;"/>
+        <Button fx:id="exportPdfBtn"
+                text="Export as PDF"
+                onAction="#handleExportPdf" />
     </HBox>
 </VBox>

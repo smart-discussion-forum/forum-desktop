@@ -1,5 +1,6 @@
 package com.mindshare.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mindshare.auth.model.UserSession;
 import com.mindshare.group.Group;
@@ -10,7 +11,6 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 
 import java.io.IOException;
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 
 // Handle fetching the logged-in user's groups from Laravel API.
@@ -41,6 +41,25 @@ public class GroupService {
 
                 return objectMapper.readValue(groupsNode.traverse(),
                         objectMapper.getTypeFactory().constructCollectionType(List.class, Group.class));
+            }
+        }
+    }
+
+    public JsonNode fetchGroupMembers(int groupId) throws IOException {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet(BASE_URL + "/groups/" + groupId + "/members");
+            request.setHeader("Accept", "application/json");
+
+            if (UserSession.getToken() != null && !UserSession.getToken().isBlank()) {
+                request.setHeader("Authorization", "Bearer " + UserSession.getToken());
+            }
+
+            try (CloseableHttpResponse response = client.execute(request)) {
+                String responseBody = response.getEntity() == null ? "" : new String(response.getEntity().getContent().readAllBytes());
+                if (response.getCode() != 200) {
+                    throw new IOException("Failed to fetch group members (HTTP " + response.getCode() + "): " + responseBody);
+                }
+                return objectMapper.readTree(responseBody);
             }
         }
     }

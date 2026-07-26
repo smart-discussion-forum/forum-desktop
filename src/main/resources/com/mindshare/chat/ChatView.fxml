@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -11,7 +11,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.mindshare.chat.ChatController"
-            prefHeight="600.0" prefWidth="900.0">
+            prefHeight="600.0" prefWidth="900.0" stylesheets="@../style.css">
 
     <!-- LEFT SIDEBAR: Your Groups Navigation -->
     <left>
@@ -51,11 +51,20 @@
                 <!-- Chat Messages Stream -->
                 <ListView fx:id="chatListView" VBox.vgrow="ALWAYS" style="-fx-background-radius: 10; -fx-border-color: transparent;" />
 
-                <!-- Bottom Bar: Message Input & Send -->
+                <!-- Bottom Bar: Message Input, Exclude Members & Send -->
                 <HBox spacing="10.0" alignment="CENTER">
                     <children>
                         <TextField fx:id="messageField" promptText="Type a message..." onAction="#handleSend"
                                    HBox.hgrow="ALWAYS" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #94a3b8; -fx-background-radius: 10; -fx-padding: 12;" />
+
+                        <!-- NEW: Exclude Members Dropdown -->
+                        <MenuButton fx:id="excludeMembersButton" text="Exclude members"
+                                    style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-background-radius: 10; -fx-padding: 10 16; -fx-cursor: hand; -fx-font-size: 13px;">
+                            <items>
+                                <!-- CheckMenuItem items will be dynamically loaded from ChatController -->
+                            </items>
+                        </MenuButton>
+
                         <Button fx:id="sendButton" text="Send" onAction="#handleSend"
                                 style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 12 24; -fx-cursor: hand;" />
                     </children>
