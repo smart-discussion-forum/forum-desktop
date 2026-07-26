@@ -6,7 +6,6 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="TOP_CENTER" spacing="20" xmlns="http://javafx.com/javafx"
@@ -24,6 +23,7 @@
                 <Label fx:id="groupNameLabel" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #1a1a2e;"/>
                 <Label text="Browse topic summaries, see the latest discussion snippet, and jump into a thread."
                        style="-fx-text-fill: #6c757d; -fx-font-size: 13px;"/>
+                <Label fx:id="statusLabel" />
             </VBox>
         </left>
         <right>
@@ -39,6 +39,7 @@
         <padding>
             <Insets top="10" right="10" bottom="10" left="10"/>
         </padding>
+
         <TableView fx:id="topicTableView" prefWidth="980" prefHeight="380" id="topicTable"
                    style="-fx-background-color: transparent; -fx-selection-bar: #eef2ff; -fx-selection-bar-non-focused: #eef2ff; -fx-text-fill: #1a1a1a;">
                 <columns>

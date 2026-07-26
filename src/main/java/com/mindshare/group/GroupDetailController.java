@@ -15,7 +15,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableCell;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +22,7 @@ public class GroupDetailController {
 
     @FXML private Label groupNameLabel;
     @FXML private TableView<Topic> topicTableView;
+    @FXML private Label statusLabel;
     @FXML private TableColumn<Topic, String> topicColumn;
     @FXML private TableColumn<Topic, String> categoryColumn;
     @FXML private TableColumn<Topic, String> creatorColumn;
@@ -113,6 +113,9 @@ public class GroupDetailController {
 
     private void loadTopics() {
         if (currentGroup == null) return;
+        if (statusLabel != null) {
+            statusLabel.setText("Loading topics...");
+        }
 
         Task<List<Topic>> fetchTask = new Task<>() {
             @Override

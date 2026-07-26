@@ -4,23 +4,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.mindshare.api.GroupMessageService;
 import com.mindshare.api.GroupService;
 import com.mindshare.group.Group;
+import com.mindshare.auth.model.UserSession;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.control.*;
-import javafx.stage.Stage;
-import com.mindshare.auth.model.UserSession;
-
-import java.util.ArrayList;
-import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChatController {
 
@@ -32,15 +31,16 @@ public class ChatController {
     @FXML private ListView<ChatMessage> chatListView;
     @FXML private TextField messageField;
     @FXML private Button sendButton;
+    @FXML private MenuButton excludeMembersButton;
 
     private int currentGroupId;
+    private final List<Integer> excludedUserIds = new ArrayList<>();
 
     private final GroupService groupService = new GroupService();
     private final GroupMessageService groupMessageService = new GroupMessageService();
 
     @FXML
     public void initialize() {
-
         loadUserGroups();
         setupChatCellFactory();
         groupsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldGroup, newGroup) -> {
@@ -57,6 +57,7 @@ public class ChatController {
             activeGroupLabel.setText(selected != null ? selected.getName() : "Group #" + groupId);
         }
         loadChatMessages(groupId);
+        loadGroupMembers(groupId);
     }
 
     private void loadUserGroups() {
@@ -87,6 +88,95 @@ public class ChatController {
         thread.start();
     }
 
+    private void loadGroupMembers(int groupId) {
+        Task<JsonNode> task = new Task<>() {
+            @Override
+            protected JsonNode call() throws Exception {
+                return groupService.fetchGroupMembers(groupId);
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+            System.out.println("Members JSON received: " + task.getValue());
+            Platform.runLater(() -> populateExcludeMembersMenu(task.getValue()));
+        });
+
+        task.setOnFailed(e -> {
+            System.err.println("Failed to fetch members for group " + groupId);
+            task.getException().printStackTrace();
+        });
+
+        Thread thread = new Thread(task, "load-group-members-" + groupId);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private void populateExcludeMembersMenu(JsonNode root) {
+        excludeMembersButton.getItems().clear();
+        excludedUserIds.clear();
+        updateMenuButtonText();
+
+        if (root == null) {
+            System.out.println("Members root JSON is null!");
+            return;
+        }
+
+        JsonNode membersNode = root.isArray() ? root
+                : root.has("members") ? root.path("members")
+                  : root.has("users") ? root.path("users")
+                    : root.has("data") ? root.path("data")
+                      : root.has("group_members") ? root.path("group_members")
+                        : root;
+
+        if (!membersNode.isArray()) {
+            System.out.println("No array found in members response shape: " + root.toString());
+            return;
+        }
+
+        String currentUserName = UserSession.getUserName();
+
+        for (JsonNode member : membersNode) {
+            JsonNode userObj = member.has("user") ? member.path("user") : member;
+
+            int id = userObj.path("id").asInt(userObj.path("user_id").asInt(0));
+            String name = firstNonBlank(
+                    userObj.path("name").asText(""),
+                    userObj.path("username").asText(""),
+                    userObj.path("full_name").asText("")
+            );
+
+            if (id == 0) continue;
+
+            // Skip current user so they don't exclude themselves
+            if (currentUserName != null && currentUserName.equalsIgnoreCase(name)) {
+                continue;
+            }
+
+            CheckMenuItem item = new CheckMenuItem(name.isBlank() ? "User #" + id : name);
+
+            item.setOnAction(e -> {
+                if (item.isSelected()) {
+                    excludedUserIds.add(id);
+                } else {
+                    excludedUserIds.remove(Integer.valueOf(id));
+                }
+                updateMenuButtonText();
+            });
+
+            excludeMembersButton.getItems().add(item);
+        }
+        System.out.println("Populated " + excludeMembersButton.getItems().size() + " members into menu.");
+    }
+
+    private void updateMenuButtonText() {
+        int count = excludedUserIds.size();
+        if (count == 0) {
+            excludeMembersButton.setText("Exclude Members");
+        } else {
+            excludeMembersButton.setText("Exclude Members (" + count + ")");
+        }
+    }
+
     private void loadChatMessages(int groupId) {
         Task<JsonNode> task = new Task<>() {
             @Override
@@ -96,7 +186,6 @@ public class ChatController {
         };
 
         task.setOnSucceeded(e -> {
-            // Ignore a stale response if the user already switched groups again
             if (groupId != currentGroupId) return;
             chatListView.setItems(FXCollections.observableArrayList(parseMessages(task.getValue())));
         });
@@ -124,7 +213,6 @@ public class ChatController {
         if (!items.isArray()) return result;
         String currentUserName = UserSession.getUserName();
 
-
         for (JsonNode item : items) {
             String sender = firstNonBlank(
                     item.path("sender").path("name").asText(""),
@@ -143,6 +231,7 @@ public class ChatController {
         }
         return result;
     }
+
     private String firstNonBlank(String... values) {
         for (String v : values) {
             if (v != null && !v.isBlank()) return v;
@@ -162,20 +251,32 @@ public class ChatController {
         String message = messageField.getText();
         if (message != null && !message.isBlank() && currentGroupId != 0) {
             String trimmed = message.trim();
+
             Task<JsonNode> task = new Task<>() {
                 @Override
                 protected JsonNode call() throws Exception {
-                    return groupMessageService.sendMessage(currentGroupId, trimmed);
+                    return groupMessageService.sendMessage(currentGroupId, trimmed, excludedUserIds);
                 }
             };
+
             task.setOnSucceeded(e -> {
                 chatListView.getItems().add(new ChatMessage(UserSession.getUserName(), trimmed, true));
                 messageField.clear();
+
+                for (MenuItem item : excludeMembersButton.getItems()) {
+                    if (item instanceof CheckMenuItem checkItem) {
+                        checkItem.setSelected(false);
+                    }
+                }
+                excludedUserIds.clear();
+                updateMenuButtonText();
             });
+
             task.setOnFailed(e -> {
                 task.getException().printStackTrace();
                 showError("Message failed to send. Please try again.");
             });
+
             Thread thread = new Thread(task, "send-message");
             thread.setDaemon(true);
             thread.start();
