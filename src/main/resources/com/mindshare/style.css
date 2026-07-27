@@ -49,6 +49,30 @@
     -fx-background-color: linear-gradient(to bottom right, #5b8ab5, #3a6d94);
 }
 
+/* Authenticated navigation matching the webapp's dark glass navbar. */
+.web-navbar {
+    -fx-background-color: rgba(10, 15, 28, 0.92);
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.08) transparent;
+    -fx-padding: 14 28 14 28;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 18, 0.12, 0, 6);
+}
+
+.web-navbar .nav-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(255, 255, 255, 0.92);
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 7 0 7 0;
+    -fx-border-width: 0;
+    -fx-effect: none;
+}
+
+.web-navbar .nav-link:hover {
+    -fx-text-fill: white;
+    -fx-underline: true;
+}
+
+
 .text-field,
 .password-field,
 .text-area,
@@ -540,45 +564,61 @@
 /* --- Notification bell --- */
 
 .notification-bell {
-    -fx-background-color: transparent;
-    -fx-font-size: 20px;
-    -fx-padding: 4 8 4 8;
+    -fx-min-width: 44px;
+    -fx-min-height: 44px;
+    -fx-max-width: 44px;
+    -fx-max-height: 44px;
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-background-radius: 50%;
+    -fx-border-color: rgba(255, 255, 255, 0.2);
+    -fx-border-width: 2px;
+    -fx-border-radius: 50%;
+    -fx-text-fill: #fbbf24;
+    -fx-font-size: 18px;
+    -fx-padding: 0;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 18, 0.12, 0, 6);
 }
 
 .notification-bell:hover {
-    -fx-background-color: rgba(148, 163, 184, 0.18);
-    -fx-background-radius: 20;
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-border-color: rgba(255, 255, 255, 0.5);
+    -fx-background-radius: 50%;
+    -fx-border-radius: 50%;
 }
 
 .notification-badge {
     -fx-background-color: #dc2626;
     -fx-background-radius: 10;
+    -fx-border-color: rgba(10, 15, 28, 0.9);
+    -fx-border-width: 2px;
+    -fx-border-radius: 10;
     -fx-text-fill: white;
-    -fx-font-size: 10px;
+    -fx-font-size: 11px;
     -fx-font-weight: 700;
-    -fx-padding: 1 5 1 5;
-    -fx-translate-x: 6;
-    -fx-translate-y: -4;
+    -fx-min-height: 18px;
+    -fx-padding: 0 4 0 4;
+    -fx-translate-x: 4;
+    -fx-translate-y: -3;
 }
 
 .notification-popup {
-    -fx-background-color: white;
-    -fx-background-radius: 14;
-    -fx-border-color: rgba(148, 163, 184, 0.25);
-    -fx-border-radius: 14;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 18, 0, 0, 4);
+    -fx-background-color: rgba(15, 23, 42, 0.95);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 24, 0.2, 0, 8);
 }
 
 .notification-popup-title {
     -fx-font-size: 15px;
     -fx-font-weight: 700;
-    -fx-text-fill: #101827;
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
 }
 
 .notification-mark-all {
     -fx-background-color: transparent;
-    -fx-text-fill: #4f7ca8;
+    -fx-text-fill: rgba(255, 255, 255, 0.6);
     -fx-font-size: 11px;
     -fx-font-weight: 600;
     -fx-cursor: hand;
@@ -603,20 +643,22 @@
 .notification-item-unread {
     -fx-background-radius: 10;
     -fx-cursor: default;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.05) transparent;
+    -fx-border-width: 0 0 1 0;
 }
 
 .notification-item-unread {
-    -fx-background-color: rgba(79, 124, 168, 0.08);
+    -fx-background-color: rgba(79, 124, 168, 0.25);
     -fx-cursor: hand;
 }
 
 .notification-item-message {
-    -fx-text-fill: #374151;
+    -fx-text-fill: rgba(255, 255, 255, 0.85);
     -fx-font-size: 12px;
 }
 
 .notification-item-message-unread {
-    -fx-text-fill: #101827;
+    -fx-text-fill: rgba(255, 255, 255, 0.95);
     -fx-font-size: 12px;
     -fx-font-weight: 600;
 }
@@ -627,6 +669,15 @@
 }
 
 .notification-unread-dot {
-    -fx-text-fill: #4f7ca8;
+    -fx-text-fill: #fbbf24;
     -fx-font-size: 8px;
+}
+
+.notification-popup-footer {
+    -fx-padding: 10 16 10 16;
+    -fx-border-color: rgba(255, 255, 255, 0.08) transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+    -fx-text-fill: rgba(255, 255, 255, 0.85);
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
 }

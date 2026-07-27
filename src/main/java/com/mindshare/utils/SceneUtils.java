@@ -5,7 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -17,11 +17,11 @@ public class SceneUtils {
     private static final String DEFAULT_STYLE =
             SceneUtils.class.getResource("/com/mindshare/style.css").toExternalForm();
 
-    private static final String NOTIFICATION_BELL_FXML =
-            "/com/mindshare/notification/NotificationBellView.fxml";
+    private static final String NAVIGATION_FXML =
+            "/com/mindshare/navigation/NavigationBarView.fxml";
 
     public static Scene createStyledScene(Parent root, double width, double height) {
-        Scene scene = new Scene(wrapWithNotificationBell(root), width, height);
+        Scene scene = new Scene(wrapWithNavigation(root), width, height);
         scene.setFill(Color.TRANSPARENT);
 
         if (!scene.getStylesheets().contains(DEFAULT_STYLE)) {
@@ -44,7 +44,7 @@ public class SceneUtils {
             stage.setMinHeight(DEFAULT_MIN_HEIGHT);
         }
 
-        Parent displayRoot = wrapWithNotificationBell(root);
+        Parent displayRoot = wrapWithNavigation(root);
 
         Scene currentScene = stage.getScene();
         if (currentScene != null) {
@@ -64,24 +64,17 @@ public class SceneUtils {
         }
     }
 
-    private static Parent wrapWithNotificationBell(Parent screenRoot) {
+    private static Parent wrapWithNavigation(Parent screenRoot) {
         if (screenRoot == null || !UserSession.isLoggedIn()) {
             return screenRoot;
         }
 
         try {
-            Node bell = new FXMLLoader(SceneUtils.class.getResource(NOTIFICATION_BELL_FXML)).load();
-            AnchorPane.setTopAnchor(screenRoot, 0.0);
-            AnchorPane.setRightAnchor(screenRoot, 0.0);
-            AnchorPane.setBottomAnchor(screenRoot, 0.0);
-            AnchorPane.setLeftAnchor(screenRoot, 0.0);
-
-            AnchorPane.setTopAnchor(bell, 12.0);
-            AnchorPane.setRightAnchor(bell, 16.0);
-
-            AnchorPane overlay = new AnchorPane(screenRoot, bell);
-            overlay.setPickOnBounds(false);
-            return overlay;
+            Node navigation = new FXMLLoader(SceneUtils.class.getResource(NAVIGATION_FXML)).load();
+            BorderPane shell = new BorderPane();
+            shell.setTop(navigation);
+            shell.setCenter(screenRoot);
+            return shell;
         } catch (Exception e) {
             e.printStackTrace();
             return screenRoot;
