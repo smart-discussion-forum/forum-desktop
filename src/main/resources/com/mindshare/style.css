@@ -681,3 +681,68 @@
     -fx-font-size: 13px;
     -fx-font-weight: 700;
 }
+
+/* --- User avatar menu (matches webapp initials button) --- */
+
+.nav-right-cluster {
+    -fx-alignment: CENTER_RIGHT;
+}
+
+.user-profile-btn {
+    -fx-min-width: 44px;
+    -fx-min-height: 44px;
+    -fx-max-width: 44px;
+    -fx-max-height: 44px;
+    -fx-background-color: linear-gradient(to bottom right, #4f7ca8, #2f5f84);
+    -fx-background-radius: 50%;
+    -fx-border-color: rgba(255, 255, 255, 0.2);
+    -fx-border-width: 2px;
+    -fx-border-radius: 50%;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 18, 0.12, 0, 6);
+}
+
+.user-profile-btn:hover {
+    -fx-background-color: linear-gradient(to bottom right, #5b8ab5, #3a6d94);
+    -fx-border-color: rgba(255, 255, 255, 0.5);
+    -fx-background-radius: 50%;
+    -fx-border-radius: 50%;
+}
+
+.user-dropdown {
+    -fx-background-color: rgba(15, 23, 42, 0.95);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 24, 0.2, 0, 8);
+    -fx-padding: 0;
+}
+
+.user-dropdown-info {
+    -fx-padding: 12 16 12 16;
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+    -fx-font-size: 13px;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.05) transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.user-dropdown-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
+    -fx-font-size: 14px;
+    -fx-padding: 12 16 12 16;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 0;
+    -fx-effect: none;
+    -fx-cursor: hand;
+}
+
+.user-dropdown-item:hover {
+    -fx-background-color: rgba(79, 124, 168, 0.3);
+    -fx-text-fill: white;
+}

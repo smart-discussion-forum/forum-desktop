@@ -13,7 +13,8 @@
         <Button fx:id="statisticsButton" text="Statistics" onAction="#handleStatistics" styleClass="nav-link" visible="false" managed="false" />
         <Button fx:id="participationButton" text="Participation" onAction="#handleParticipation" styleClass="nav-link" visible="false" managed="false" />
     </HBox>
-    <HBox spacing="12" alignment="CENTER_RIGHT">
+    <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="nav-right-cluster">
         <fx:include source="../notification/NotificationBellView.fxml" />
+        <fx:include source="UserMenuView.fxml" />
     </HBox>
 </HBox>

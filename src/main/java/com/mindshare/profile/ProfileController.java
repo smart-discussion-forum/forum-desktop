@@ -10,29 +10,37 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class ProfileController {
-    @FXML private Label nameLabel;
-    @FXML private Label emailLabel;
-    @FXML private Label roleLabel;
+    @FXML private TextField nameField;
+    @FXML private TextField emailField;
+    @FXML private TextField roleField;
+    @FXML private TextField statusField;
     @FXML private Label statusLabel;
-    @FXML private Button backButton;
+    @FXML private Button dashboardButton;
+    @FXML private Button chatButton;
+    @FXML private Button quizzesButton;
     @FXML private Button refreshButton;
 
     private final UserService userService = new UserService();
 
     @FXML
     public void initialize() {
-        // Show whatever we already have from login immediately, then refresh from the backend.
+        boolean isAdmin = "admin".equalsIgnoreCase(UserSession.getUserRole());
+        chatButton.setVisible(!isAdmin);
+        chatButton.setManaged(!isAdmin);
+
         renderFromSession();
         loadProfile();
     }
 
     private void renderFromSession() {
-        nameLabel.setText(safe(UserSession.getUserName(), "Unknown"));
-        emailLabel.setText(safe(UserSession.getUserEmail(), "-"));
-        roleLabel.setText(safe(UserSession.getUserRole(), "-"));
+        nameField.setText(safe(UserSession.getUserName(), "Unknown"));
+        emailField.setText(safe(UserSession.getUserEmail(), "-"));
+        roleField.setText(capitalize(safe(UserSession.getUserRole(), "-")));
+        statusField.setText("-");
     }
 
     private void loadProfile() {
@@ -50,12 +58,13 @@ public class ProfileController {
 
             String name = userNode.path("name").asText(UserSession.getUserName());
             String email = userNode.path("email").asText(UserSession.getUserEmail());
-
             String role = userNode.path("role").asText(UserSession.getUserRole());
+            String status = userNode.path("status").asText("-");
 
-            nameLabel.setText(safe(name, "Unknown"));
-            emailLabel.setText(safe(email, "-"));
-            roleLabel.setText(safe(role, "-"));
+            nameField.setText(safe(name, "Unknown"));
+            emailField.setText(safe(email, "-"));
+            roleField.setText(capitalize(safe(role, "-")));
+            statusField.setText(capitalize(safe(status, "-")));
             statusLabel.setText("Profile up to date.");
         });
 
@@ -70,8 +79,14 @@ public class ProfileController {
 
         new Thread(task).start();
     }
+
     private String safe(String value, String fallback) {
         return value == null || value.isBlank() ? fallback : value;
+    }
+
+    private String capitalize(String value) {
+        if (value == null || value.isBlank() || "-".equals(value)) return value;
+        return value.substring(0, 1).toUpperCase() + value.substring(1);
     }
 
     @FXML
@@ -81,14 +96,30 @@ public class ProfileController {
 
     @FXML
     private void handleBack(ActionEvent event) {
+        navigate("admin".equalsIgnoreCase(UserSession.getUserRole())
+                ? "/com/mindshare/admin/AdminLandingView.fxml"
+                : "/com/mindshare/dashboard/DashboardView.fxml");
+    }
+
+    @FXML
+    private void handleGroupChat(ActionEvent event) {
+        navigate("/com/mindshare/group/MyGroupsView.fxml");
+    }
+
+    @FXML
+    private void handleQuizzes(ActionEvent event) {
+        navigate("lecturer".equalsIgnoreCase(UserSession.getUserRole())
+                ? "/com/mindshare/quiz/QuizConfigurationView.fxml"
+                : "/com/mindshare/quiz/QuizListView.fxml");
+    }
+
+    private void navigate(String path) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/dashboard/DashboardView.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) backButton.getScene().getWindow();
+            Parent root = FXMLLoader.load(getClass().getResource(path));
+            Stage stage = (Stage) dashboardButton.getScene().getWindow();
             com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }
