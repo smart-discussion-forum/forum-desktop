@@ -38,6 +38,25 @@ public class AuthService {
 
         }
     }
+
+    public JsonNode register(String name, String email, String password, boolean acceptedTerms) throws IOException {
+        String requestBody = objectMapper.writeValueAsString(
+                new RegisterRequest(name, email, password, "student", acceptedTerms)
+        );
+
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpPost request = new HttpPost(BASE_URL + "/register");
+            request.setHeader("Accept", "application/json");
+            request.setEntity(new StringEntity(requestBody, ContentType.APPLICATION_JSON));
+
+            try (CloseableHttpResponse response = client.execute(request)) {
+                String responseBody = new String(response.getEntity().getContent().readAllBytes());
+                System.out.println("Raw HTTP response: " + responseBody);
+                return objectMapper.readTree(responseBody);
+            }
+        }
+    }
+
 //Internal helper class just to shape the JSON request body.
     private static class LoginRequest {
         public String email;
@@ -47,5 +66,21 @@ public class AuthService {
             this.email = email;
             this.password = password;
         }
-}
+    }
+
+    private static class RegisterRequest {
+        public String name;
+        public String email;
+        public String password;
+        public String role;
+        public boolean accepted_terms;
+
+        public RegisterRequest(String name, String email, String password, String role, boolean acceptedTerms) {
+            this.name = name;
+            this.email = email;
+            this.password = password;
+            this.role = role;
+            this.accepted_terms = acceptedTerms;
+        }
+    }
 }
