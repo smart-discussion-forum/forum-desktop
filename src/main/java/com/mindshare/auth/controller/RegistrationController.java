@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -30,6 +31,9 @@ public class RegistrationController {
     private PasswordField passwordField;
 
     @FXML
+    private ComboBox<String> roleComboBox;
+
+    @FXML
     private CheckBox acceptRulesCheckBox;
 
     @FXML
@@ -41,26 +45,32 @@ public class RegistrationController {
     private final AuthService authService = new AuthService();
 
     @FXML
+    private void initialize() {
+        roleComboBox.getItems().addAll("Student", "Lecturer", "Admin");
+        roleComboBox.getSelectionModel().selectFirst();
+    }
+
+    @FXML
     private void handleRegister(ActionEvent event) {
         if (nameField.getText().isBlank() || emailField.getText().isBlank() || passwordField.getText().isBlank()) {
-            errorLabel.setText("All fields are required.");
-            errorLabel.setVisible(true);
+            showError("All fields are required.");
             return;
         }
 
         //FR-05: Registration is declined if rules aren't accepted
         if (!acceptRulesCheckBox.isSelected()) {
-            errorLabel.setText("You must accept rules to register.");
-            errorLabel.setVisible(true);
+            showError("You must accept rules to register.");
             return;
         }
         errorLabel.setVisible(false);
+        errorLabel.setManaged(false);
 
         try {
             JsonNode response = authService.register(
                     nameField.getText().trim(),
                     emailField.getText().trim(),
                     passwordField.getText(),
+                    toBackendRole(roleComboBox.getValue()),
                     true
             );
 
@@ -83,13 +93,28 @@ public class RegistrationController {
                 return;
             }
 
-            errorLabel.setText(extractErrorMessage(response));
-            errorLabel.setVisible(true);
+            showError(extractErrorMessage(response));
         } catch (IOException e) {
-            errorLabel.setText("Could not reach the server. Check your connection.");
-            errorLabel.setVisible(true);
+            showError("Could not reach the server. Check your connection.");
             e.printStackTrace();
         }
+    }
+
+    private void showError(String message) {
+        errorLabel.setText(message);
+        errorLabel.setVisible(true);
+        errorLabel.setManaged(true);
+    }
+
+    // Backend validates role as: student, Lecturer, Admin
+    private static String toBackendRole(String displayValue) {
+        if (displayValue == null) return "student";
+        return switch (displayValue) {
+            case "Student" -> "student";
+            case "Lecturer" -> "Lecturer";
+            case "Admin" -> "Admin";
+            default -> "student";
+        };
     }
 
     private static String extractErrorMessage(JsonNode response) {

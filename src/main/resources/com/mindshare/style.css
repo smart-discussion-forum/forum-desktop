@@ -203,6 +203,22 @@
 
 .panel .label,
 .auth-card .label,
+
+.auth-card-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748b;
+}
+
+.auth-submit-button {
+    -fx-background-color: linear-gradient(to bottom right, #4f7ca8, #2f5f84);
+    -fx-text-fill: white;
+    -fx-background-radius: 999;
+    -fx-padding: 10 26 10 26;
+}
+
+.auth-submit-button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #5b8ab5, #3a6d94);
+}
 .glass-card .label,
 .discussion-sidebar .label,
 .discussion-conversation .label,
