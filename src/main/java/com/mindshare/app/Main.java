@@ -9,7 +9,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-       com.mindshare.database.SQLiteConnection.initializeSchema();
+        com.mindshare.database.SQLiteConnection.initializeSchema();
+        com.mindshare.sync.OfflineActionQueue.start();
        // The initialization call could be through an import at the top outside the method.
         com.mindshare.sync.NetworkMonitor.refreshStatus();
 
