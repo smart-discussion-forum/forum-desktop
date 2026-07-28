@@ -108,9 +108,7 @@ public class ProfileController {
 
     @FXML
     private void handleQuizzes(ActionEvent event) {
-        navigate("lecturer".equalsIgnoreCase(UserSession.getUserRole())
-                ? "/com/mindshare/quiz/QuizConfigurationView.fxml"
-                : "/com/mindshare/quiz/QuizListView.fxml");
+        navigate("/com/mindshare/quiz/QuizListView.fxml");
     }
 
     private void navigate(String path) {

@@ -35,12 +35,12 @@ public class DashboardController {
                 boolean isLecturer = role.equalsIgnoreCase("lecturer");
                 boolean isStudent = role.equalsIgnoreCase("student");
 
-                //Quiz button label (lectures configure, students take)
+                //Everyone opens the quiz list; lecturers can create from there.
                quizButton.setVisible(isStudent || isLecturer);
                quizButton.setManaged(isStudent || isLecturer);
 
                 if (isLecturer) {
-                        quizButton.setText("Create Quiz");
+                        quizButton.setText("Quizzes");
                 }
         }
         @FXML
@@ -50,11 +50,7 @@ public class DashboardController {
 
         @FXML
         private void handleQuiz(ActionEvent event) {
-                String role = UserSession.getUserRole();
-                String fxmlPath = role.equalsIgnoreCase("lecturer")
-                        ? "/com/mindshare/quiz/QuizConfigurationView.fxml"
-                        : "/com/mindshare/quiz/QuizListView.fxml";
-                navigateTo(fxmlPath, quizButton);
+                navigateTo("/com/mindshare/quiz/QuizListView.fxml", quizButton);
         }
 
         @FXML
