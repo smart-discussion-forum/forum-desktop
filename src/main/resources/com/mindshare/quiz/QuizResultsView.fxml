@@ -2,17 +2,23 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="15" xmlns="http://javafx.com/javafx"
+<ScrollPane fitToWidth="true" styleClass="root" xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.mindshare.quiz.QuizResultsController">
-    <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
-
-    <Label text="Quiz Results" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
-    <Label fx:id="scoreLabel" style="-fx-font-size: 16px;"/>
-    <Label fx:id="gradeLabel" style="-fx-font-size: 16px;"/>
-    <Label fx:id="feedbackLabel" wrapText="true"/>
-
-    <Button fx:id="doneButton" text="Back to Dashboard" onAction="#handleDone"/>
-</VBox>
+    <content><VBox alignment="TOP_CENTER" spacing="15">
+        <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
+        <VBox styleClass="page-card" maxWidth="720" spacing="14">
+            <padding><Insets top="28" right="30" bottom="28" left="30"/></padding>
+            <Label text="Quiz Results" styleClass="screen-title"/>
+            <Label fx:id="scoreLabel" styleClass="result-score"/>
+            <Label fx:id="gradeLabel" styleClass="result-grade"/>
+            <Label fx:id="feedbackLabel" wrapText="true" styleClass="result-feedback"/>
+            <TextArea fx:id="breakdownArea" editable="false" wrapText="true" prefRowCount="12" />
+            <Button fx:id="doneButton" text="Back to Quizzes" onAction="#handleDone"/>
+        </VBox>
+    </VBox></content>
+</ScrollPane>

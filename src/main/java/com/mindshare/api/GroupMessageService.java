@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mindshare.auth.model.UserSession;
+import com.mindshare.sync.NetworkMonitor;
+import com.mindshare.sync.OfflineActionQueue;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -35,6 +37,15 @@ public class GroupMessageService {
     }
 
     public JsonNode sendMessage(int groupId, String content, List<Integer> excludedUserIds) throws IOException {
+        ObjectNode json = buildMessageBody(groupId, content, excludedUserIds);
+        if (!NetworkMonitor.isServerReachable()) {
+            OfflineActionQueue.enqueuePost("/messages/send", json.toString(), UserSession.getToken());
+            ObjectNode queued = objectMapper.createObjectNode();
+            queued.put("queued", true);
+            queued.put("message", "Message saved and will be sent when you are back online.");
+            return queued;
+        }
+
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost request = new HttpPost(BASE_URL + "/messages/send");
             request.setHeader("Content-Type", "application/json");
@@ -42,16 +53,6 @@ public class GroupMessageService {
 
             if (UserSession.getToken() != null && !UserSession.getToken().isBlank()) {
                 request.setHeader("Authorization", "Bearer " + UserSession.getToken());
-            }
-
-            ObjectNode json = objectMapper.createObjectNode();
-            json.put("group_id", groupId);
-            json.put("content", content);
-            json.put("message", content); // added in case backend expects 'message' instead of 'content'
-
-            if (excludedUserIds != null && !excludedUserIds.isEmpty()) {
-                ArrayNode excludedArray = json.putArray("excluded_user_ids");
-                excludedUserIds.forEach(excludedArray::add);
             }
 
             request.setEntity(new StringEntity(json.toString(), ContentType.APPLICATION_JSON));
@@ -64,5 +65,17 @@ public class GroupMessageService {
                 return objectMapper.readTree(responseBody);
             }
         }
+    }
+
+    private ObjectNode buildMessageBody(int groupId, String content, List<Integer> excludedUserIds) {
+        ObjectNode json = objectMapper.createObjectNode();
+        json.put("group_id", groupId);
+        json.put("content", content);
+        json.put("message", content);
+        if (excludedUserIds != null && !excludedUserIds.isEmpty()) {
+            ArrayNode excludedArray = json.putArray("excluded_user_ids");
+            excludedUserIds.forEach(excludedArray::add);
+        }
+        return json;
     }
 }

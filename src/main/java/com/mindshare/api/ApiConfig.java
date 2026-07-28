@@ -2,7 +2,7 @@ package com.mindshare.api;
 
 public final class ApiConfig {
 
-    private static final String DEFAULT_BASE_URL = "http://127.0.0.1:8000/api";
+    private static final String DEFAULT_BASE_URL = "https://mindshare.up.railway.app/api";
     private static final String BASE_URL = resolveBaseUrl();
 
     private ApiConfig() {

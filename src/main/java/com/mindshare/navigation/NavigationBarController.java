@@ -27,9 +27,7 @@ public class NavigationBarController {
     }
     @FXML private void handleGroups(ActionEvent e) { navigate("/com/mindshare/group/BrowseGroupsView.fxml", source(e)); }
     @FXML private void handleQuiz(ActionEvent e) {
-        navigate("lecturer".equalsIgnoreCase(UserSession.getUserRole())
-                ? "/com/mindshare/quiz/QuizConfigurationView.fxml"
-                : "/com/mindshare/quiz/QuizListView.fxml", source(e));
+        navigate("/com/mindshare/quiz/QuizListView.fxml", source(e));
     }
     @FXML private void handleRecommended(ActionEvent e) { navigate("/com/mindshare/recommendation/RecommendationView.fxml", source(e)); }
     @FXML private void handleManageUsers(ActionEvent e) { navigate("/com/mindshare/admin/AdminDashboardView.fxml", source(e)); }

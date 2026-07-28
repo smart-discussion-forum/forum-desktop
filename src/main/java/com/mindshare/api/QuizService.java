@@ -43,11 +43,28 @@ public class QuizService {
     }
 
     public JsonNode submitFullAttempt(int attemptId) throws IOException {
-        return post("/quiz/attempt/" + attemptId + "/submit", "{}");
+        return submitFullAttempt(attemptId, false);
+    }
+
+    public JsonNode submitFullAttempt(int attemptId, boolean autoSubmitted) throws IOException {
+        return post("/quiz/attempt/" + attemptId + "/submit",
+                "{\"auto_submitted\":" + autoSubmitted + "}");
     }
 
     public JsonNode fetchResults(int attemptId) throws IOException {
         return get("/quiz/attempt/" +attemptId +"/results");
+    }
+
+    public JsonNode fetchLecturerResults(int quizId) throws IOException {
+        return get("/quiz/" + quizId + "/results");
+    }
+
+    public JsonNode fetchAnswerKey(int quizId) throws IOException {
+        return get("/quizzes/" + quizId + "/questions");
+    }
+
+    public JsonNode announceQuiz(int quizId) throws IOException {
+        return post("/quizzes/" + quizId + "/announce", "{}");
     }
 
 

@@ -18,11 +18,26 @@ public class QuizListItem {
     @JsonProperty("start_time_display")
     private String startTimeDisplay;
 
+    @JsonProperty("group_name")
+    private String groupName;
+
+    @JsonProperty("group_id")
+    private Integer groupId;
+
     @JsonProperty("status")
     private String status;
 
     @JsonProperty("is_owner")
     private boolean owner;
+
+    @JsonProperty("announced")
+    private boolean announced;
+
+    @JsonProperty("announced_at_display")
+    private String announcedAtDisplay;
+
+    @JsonProperty("can_announce")
+    private boolean canAnnounce;
 
     @JsonProperty("my_attempt_id")
     private Integer myAttemptId;
@@ -49,12 +64,30 @@ public class QuizListItem {
         return startTimeDisplay;
     }
 
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public Integer getGroupId() { return groupId; }
+
     public String getStatus() {
         return status;
     }
 
     public boolean isOwner() {
         return owner;
+    }
+
+    public boolean isAnnounced() {
+        return announced;
+    }
+
+    public String getAnnouncedAtDisplay() {
+        return announcedAtDisplay;
+    }
+
+    public boolean canAnnounce() {
+        return canAnnounce;
     }
 
     public Integer getMyAttemptId() {

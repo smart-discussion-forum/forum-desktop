@@ -261,6 +261,9 @@ public class ChatController {
 
             task.setOnSucceeded(e -> {
                 chatListView.getItems().add(new ChatMessage(UserSession.getUserName(), trimmed, true));
+                if (task.getValue().path("queued").asBoolean(false)) {
+                    showInfo(task.getValue().path("message").asText("Message saved for later delivery."));
+                }
                 messageField.clear();
 
                 for (MenuItem item : excludeMembersButton.getItems()) {
@@ -281,6 +284,14 @@ public class ChatController {
             thread.setDaemon(true);
             thread.start();
         }
+    }
+
+    private void showInfo(String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
+            alert.setHeaderText(null);
+            alert.showAndWait();
+        });
     }
 
     @FXML

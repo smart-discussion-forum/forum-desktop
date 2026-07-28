@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.VBox?>
+<ScrollPane fitToWidth="true" styleClass="root" xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml" fx:controller="com.mindshare.quiz.QuizAnswerKeyController">
+    <content><VBox alignment="TOP_CENTER" spacing="18">
+        <padding><Insets top="24" right="24" bottom="30" left="24" /></padding>
+        <VBox fx:id="contentBox" styleClass="page-card" maxWidth="900" spacing="14">
+            <padding><Insets top="26" right="30" bottom="26" left="30" /></padding>
+            <Label fx:id="titleLabel" styleClass="screen-title" />
+            <Label fx:id="countLabel" styleClass="page-subtitle" />
+            <Label fx:id="statusLabel" styleClass="admin-status" />
+            <Button text="Back to Quiz" onAction="#handleBack" />
+        </VBox>
+    </VBox></content>
+</ScrollPane>

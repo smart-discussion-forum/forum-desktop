@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mindshare.auth.model.UserSession;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -32,6 +33,21 @@ public class QuizAdminService {
             }
             request.setEntity(new StringEntity(requestBody, ContentType.APPLICATION_JSON));
 
+            try (CloseableHttpResponse response = client.execute(request)) {
+                return readJsonOrThrow(response, request);
+            }
+        }
+    }
+
+    public JsonNode updateQuiz(int quizId, CreateQuizRequest requestPayload) throws IOException {
+        String requestBody = objectMapper.writeValueAsString(requestPayload);
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpPut request = new HttpPut(BASE_URL + "/quizzes/" + quizId);
+            request.setHeader("Accept", "application/json");
+            if (UserSession.getToken() != null && !UserSession.getToken().isBlank()) {
+                request.setHeader("Authorization", "Bearer " + UserSession.getToken());
+            }
+            request.setEntity(new StringEntity(requestBody, ContentType.APPLICATION_JSON));
             try (CloseableHttpResponse response = client.execute(request)) {
                 return readJsonOrThrow(response, request);
             }

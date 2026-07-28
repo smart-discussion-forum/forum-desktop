@@ -66,6 +66,8 @@ public class QuizQuestionBuilderView extends VBox {
         getChildren().addAll(headerRow, questionField, optionsBox, settingsRow);
 
         draft.ensureMinimumOptions(2);
+        questionField.setText(draft.getQuestionText());
+        marksSpinner.getValueFactory().setValue(draft.getMarks());
         rebuildOptions();
     }
 
