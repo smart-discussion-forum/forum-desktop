@@ -49,6 +49,11 @@
                     </VBox>
 
                     <VBox spacing="6">
+                        <Label text="Start time (24-hour):" styleClass="form-field-label"/>
+                        <TextField fx:id="timeField" promptText="HH:mm (for example 14:30)" styleClass="text-field"/>
+                    </VBox>
+
+                    <VBox spacing="6">
                         <Label text="Duration (minutes):" styleClass="form-field-label"/>
                         <TextField fx:id="durationField" styleClass="text-field"/>
                     </VBox>

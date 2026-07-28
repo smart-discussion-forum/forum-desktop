@@ -12,6 +12,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Toggle;
@@ -35,6 +37,8 @@ public class QuizTakingController {
     private Timeline timer;
     private int secondsRemaining;
     private int attemptId = -1;
+    private boolean finished;
+    private boolean closeHandlerInstalled;
 
     private final QuizService quizService = new QuizService();
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -44,7 +48,33 @@ public class QuizTakingController {
         if (questionLabel != null) {
             questionLabel.setText("Starting quiz...");
         }
+        installCloseWarning();
         startAttempt();
+    }
+
+    private void installCloseWarning() {
+        if (closeHandlerInstalled) return;
+        closeHandlerInstalled = true;
+        submitButton.sceneProperty().addListener((observable, oldScene, scene) -> {
+            if (scene == null) return;
+            installCloseWarning(scene.getWindow());
+            scene.windowProperty().addListener((windowObservable, oldWindow, window) -> installCloseWarning(window));
+        });
+        if (submitButton.getScene() != null) {
+            installCloseWarning(submitButton.getScene().getWindow());
+        }
+    }
+
+    private void installCloseWarning(javafx.stage.Window window) {
+        if (window == null) return;
+        window.setOnCloseRequest(event -> {
+                if (finished || timer == null || !timer.getStatus().equals(Timeline.Status.RUNNING)) return;
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Leaving now will not submit your current answers. Continue?", ButtonType.CANCEL, ButtonType.OK);
+                alert.setTitle("Leave quiz?");
+                ButtonType choice = alert.showAndWait().orElse(ButtonType.CANCEL);
+                if (!ButtonType.OK.equals(choice)) event.consume();
+            });
     }
 
     private void startAttempt() {
@@ -83,8 +113,25 @@ public class QuizTakingController {
         });
 
         task.setOnFailed(e -> {
-            task.getException().printStackTrace();
-            questionLabel.setText("Error starting quiz attempt.");
+            Throwable error = task.getException();
+            String message = error == null ? "" : error.getMessage();
+            if (message != null && (message.contains("already closed") || message.contains("not yet available")
+                    || message.contains("HTTP 403"))) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                        "This quiz has closed; no attempt was recorded.");
+                alert.setTitle("Quiz unavailable");
+                alert.setHeaderText(null);
+                alert.showAndWait();
+                try {
+                    Parent list = FXMLLoader.load(getClass().getResource("/com/mindshare/quiz/QuizListView.fxml"));
+                    SceneUtils.switchScene((Stage) submitButton.getScene().getWindow(), list);
+                } catch (Exception navigationError) {
+                    navigationError.printStackTrace();
+                }
+            } else {
+                task.getException().printStackTrace();
+                questionLabel.setText("Error starting quiz attempt.");
+            }
         });
 
         new Thread(task).start();
@@ -115,7 +162,7 @@ public class QuizTakingController {
                 return;
             }
             if (quiz.hasDuration()) {
-                secondsRemaining = quiz.getDurationMinutes() * 60;
+                secondsRemaining = quiz.getRemainingSeconds();
                 startTimer();
             } else {
                 timerLabel.setText("Quiz in progress");
@@ -205,7 +252,7 @@ public class QuizTakingController {
         Task<JsonNode> task = new Task<>() {
             @Override
             protected JsonNode call() throws Exception {
-                quizService.submitFullAttempt(attemptId);
+                quizService.submitFullAttempt(attemptId, autoSubmitted);
                 return quizService.fetchResults(attemptId);
             }
         };
@@ -223,6 +270,7 @@ public class QuizTakingController {
 
     private void goToResults(JsonNode resultsJson, boolean autoSubmitted) {
         try {
+            finished = true;
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/quiz/QuizResultsView.fxml"));
             Parent root = loader.load();
             QuizResultsController controller = loader.getController();

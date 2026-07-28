@@ -2,19 +2,44 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="15" xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.mindshare.quiz.QuizListController">
-    <padding>
-        <Insets top="30" right="30" bottom="30" left="30"/>
-    </padding>
-
-    <Label text="Available Quizzes" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
-    <Label fx:id="statusLabel" style="-fx-font-size: 13px;"/>
-    <ListView fx:id="quizListView" prefHeight="220" prefWidth="420"/>
-    <Button fx:id="openButton" text="Open Quiz" onAction="#handleOpen" prefWidth="180"/>
-    <Button fx:id="backButton" text="Back" onAction="#handleBack" prefWidth="180"/>
-</VBox>
+<ScrollPane fitToWidth="true" styleClass="root" xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.mindshare.quiz.QuizListController">
+    <content>
+        <VBox alignment="TOP_CENTER" spacing="20">
+            <padding><Insets top="24" right="24" bottom="30" left="24" /></padding>
+            <VBox styleClass="page-card" maxWidth="1100" spacing="18">
+                <padding><Insets top="24" right="28" bottom="24" left="28" /></padding>
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Quizzes" styleClass="screen-title" />
+                        <Label text="View scheduled quizzes, their status, and announcements."
+                               styleClass="page-subtitle" />
+                    </VBox>
+                    <Button fx:id="createButton" text="Create Quiz" onAction="#handleCreate"
+                            styleClass="button" visible="false" managed="false" />
+                </HBox>
+                <TableView fx:id="quizTable" prefHeight="460" maxWidth="Infinity" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="titleColumn" text="Title" prefWidth="235" />
+                        <TableColumn fx:id="groupColumn" text="Group" prefWidth="190" />
+                        <TableColumn fx:id="startColumn" text="Start" prefWidth="150" />
+                        <TableColumn fx:id="statusColumn" text="Status" prefWidth="150" />
+                        <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="240" />
+                    </columns>
+                </TableView>
+                <Label fx:id="statusLabel" styleClass="admin-status" />
+                <HBox spacing="12" alignment="CENTER">
+                    <Button fx:id="openButton" text="Open Quiz" onAction="#handleOpen" prefWidth="180" />
+                    <Button fx:id="backButton" text="Back" onAction="#handleBack" prefWidth="180" />
+                </HBox>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>
