@@ -39,9 +39,9 @@ public class AuthService {
         }
     }
 
-    public JsonNode register(String name, String email, String password, boolean acceptedTerms) throws IOException {
+    public JsonNode register(String name, String email, String password, String role, boolean acceptedTerms) throws IOException {
         String requestBody = objectMapper.writeValueAsString(
-                new RegisterRequest(name, email, password, "student", acceptedTerms)
+                new RegisterRequest(name, email, password, role, acceptedTerms)
         );
 
         try (CloseableHttpClient client = HttpClients.createDefault()) {
