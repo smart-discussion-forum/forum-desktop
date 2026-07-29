@@ -11,45 +11,47 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx"
-           xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.mindshare.auth.controller.RegistrationController">
+<VBox spacing="0" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.mindshare.auth.controller.RegistrationController">
+    <fx:include source="GuestNavBarView.fxml"/>
 
-    <VBox alignment="CENTER" spacing="16" maxWidth="420" maxHeight="-Infinity" styleClass="auth-card">
-        <padding>
-            <Insets top="40" right="40" bottom="40" left="40"/>
-        </padding>
+    <StackPane VBox.vgrow="ALWAYS">
+        <VBox alignment="CENTER" spacing="16" maxWidth="420" maxHeight="-Infinity" styleClass="auth-card">
+            <padding>
+                <Insets top="40" right="40" bottom="40" left="40"/>
+            </padding>
 
-        <Label text="Registration" styleClass="screen-title"/>
-        <Label text="Create your account" styleClass="auth-card-subtitle"/>
+            <Label text="Registration" styleClass="screen-title"/>
+            <Label text="Create your account" styleClass="auth-card-subtitle"/>
 
-        <VBox spacing="6" maxWidth="320">
-            <Label text="Name:" styleClass="form-field-label"/>
-            <TextField fx:id="nameField" promptText="Name"/>
+            <VBox spacing="6" maxWidth="320">
+                <Label text="Name:" styleClass="form-field-label"/>
+                <TextField fx:id="nameField" promptText="Name"/>
+            </VBox>
+
+            <VBox spacing="6" maxWidth="320">
+                <Label text="Email:" styleClass="form-field-label"/>
+                <TextField fx:id="emailField" promptText="Email"/>
+            </VBox>
+
+            <VBox spacing="6" maxWidth="320">
+                <Label text="Password:" styleClass="form-field-label"/>
+                <PasswordField fx:id="passwordField" promptText="Password"/>
+            </VBox>
+
+            <VBox spacing="6" maxWidth="320">
+                <Label text="I am a:" styleClass="form-field-label"/>
+                <ComboBox fx:id="roleComboBox" maxWidth="320" prefWidth="320"/>
+            </VBox>
+
+            <CheckBox fx:id="acceptRulesCheckBox" text="Accept Rules"/>
+
+            <Label fx:id="errorLabel" styleClass="error" visible="false" managed="false" wrapText="true" maxWidth="320"/>
+
+            <HBox alignment="CENTER_RIGHT" maxWidth="320">
+                <Button fx:id="registerButton" text="Register" onAction="#handleRegister" styleClass="auth-submit-button"/>
+            </HBox>
         </VBox>
-
-        <VBox spacing="6" maxWidth="320">
-            <Label text="Email:" styleClass="form-field-label"/>
-            <TextField fx:id="emailField" promptText="Email"/>
-        </VBox>
-
-        <VBox spacing="6" maxWidth="320">
-            <Label text="Password:" styleClass="form-field-label"/>
-            <PasswordField fx:id="passwordField" promptText="Password"/>
-        </VBox>
-
-        <VBox spacing="6" maxWidth="320">
-            <Label text="I am a:" styleClass="form-field-label"/>
-            <ComboBox fx:id="roleComboBox" maxWidth="320" prefWidth="320"/>
-        </VBox>
-
-        <CheckBox fx:id="acceptRulesCheckBox" text="Accept Rules"/>
-
-        <Label fx:id="errorLabel" styleClass="error" visible="false" managed="false" wrapText="true" maxWidth="320"/>
-
-        <HBox alignment="CENTER_RIGHT" maxWidth="320">
-            <Button fx:id="registerButton" text="Register" onAction="#handleRegister" styleClass="auth-submit-button"/>
-        </HBox>
-    </VBox>
-
-</StackPane>
+    </StackPane>
+</VBox>

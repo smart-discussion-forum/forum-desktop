@@ -9,6 +9,8 @@ import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 
 import java.io.IOException;
 import java.util.List;
@@ -90,6 +92,29 @@ public class GroupService {
         }
     }
 
+    public Group createGroup(String name, String description) throws IOException {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpPost request = new HttpPost(BASE_URL + "/groups");
+            request.setHeader("Accept", "application/json");
+            if (UserSession.getToken() != null && !UserSession.getToken().isBlank()) {
+                request.setHeader("Authorization", "Bearer " + UserSession.getToken());
+            }
+
+            String body = objectMapper.writeValueAsString(new CreateGroupRequest(name, description));
+            request.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
+
+            try (CloseableHttpResponse response = client.execute(request)) {
+                String responseBody = response.getEntity() == null
+                        ? ""
+                        : new String(response.getEntity().getContent().readAllBytes());
+                if (response.getCode() != 201 && response.getCode() != 200) {
+                    throw new IOException(extractErrorMessage(responseBody, response.getCode()));
+                }
+                return objectMapper.readValue(responseBody, Group.class);
+            }
+        }
+    }
+
     public void joinGroup(int groupId) throws IOException {
         postAction(groupId, "join");
     }
@@ -112,6 +137,37 @@ public class GroupService {
                     throw new IOException("Failed to " + action + " group (HTTP " + response.getCode() + "): " + responseBody);
                 }
             }
+        }
+    }
+
+    private String extractErrorMessage(String responseBody, int statusCode) {
+        try {
+            JsonNode root = objectMapper.readTree(responseBody);
+            if (root.has("message") && !root.get("message").asText("").isBlank()) {
+                return root.get("message").asText();
+            }
+            if (root.has("errors") && root.get("errors").isObject()) {
+                var fields = root.get("errors").fields();
+                if (fields.hasNext()) {
+                    JsonNode first = fields.next().getValue();
+                    if (first.isArray() && first.size() > 0) {
+                        return first.get(0).asText();
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+            // fall through to generic message
+        }
+        return "Failed to create group (HTTP " + statusCode + ")";
+    }
+
+    private static class CreateGroupRequest {
+        public String name;
+        public String description;
+
+        CreateGroupRequest(String name, String description) {
+            this.name = name;
+            this.description = description;
         }
     }
 }

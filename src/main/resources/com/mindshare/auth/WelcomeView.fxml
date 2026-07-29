@@ -14,11 +14,7 @@
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.mindshare.auth.controller.WelcomeController">
     <VBox spacing="0">
-        <HBox alignment="CENTER_LEFT" spacing="22" style="-fx-background-color: rgba(10, 15, 28, 0.78); -fx-padding: 16 24 16 24;">
-            <Label text="Home" style="-fx-text-fill: rgba(255,255,255,0.92); -fx-font-size: 18px; -fx-font-weight: bold;"/>
-            <Label text="Login" style="-fx-text-fill: rgba(255,255,255,0.92); -fx-font-size: 18px; -fx-font-weight: bold;"/>
-            <Label text="Register" style="-fx-text-fill: rgba(255,255,255,0.92); -fx-font-size: 18px; -fx-font-weight: bold;"/>
-        </HBox>
+        <fx:include source="GuestNavBarView.fxml"/>
 
         <StackPane VBox.vgrow="ALWAYS" style="-fx-padding: 28;">
             <VBox alignment="CENTER" spacing="22" styleClass="welcome-card" maxWidth="860">

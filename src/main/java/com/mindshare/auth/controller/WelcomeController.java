@@ -2,11 +2,10 @@ package com.mindshare.auth.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 public class WelcomeController {
@@ -31,30 +30,26 @@ public class WelcomeController {
                         "3. No spam or repeated flooding of threads.\n" +
                         "4. Two warnings result in blacklisting."
         );
-alert.showAndWait();
+        alert.showAndWait();
     }
 
     @FXML
     private void handleLogin(ActionEvent event) {
-        try {
-            Parent loginRoot = FXMLLoader.load(getClass().getResource("/com/mindshare/auth/LoginView.fxml"));
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            com.mindshare.utils.SceneUtils.switchScene(stage, loginRoot);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        navigate("/com/mindshare/auth/LoginView.fxml", loginButton);
     }
+
     @FXML
     private void handleRegister(ActionEvent event) {
+        navigate("/com/mindshare/auth/RegistrationView.fxml", registerButton);
+    }
+
+    private void navigate(String path, Button source) {
         try {
-            Parent registerRoot = FXMLLoader.load(getClass().getResource("/com/mindshare/auth/RegistrationView.fxml"));
-            Stage stage = (Stage) registerButton.getScene().getWindow();
-            com.mindshare.utils.SceneUtils.switchScene(stage, registerRoot);
-                }
-        catch (Exception e) {
+            Parent root = FXMLLoader.load(getClass().getResource(path));
+            Stage stage = (Stage) source.getScene().getWindow();
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-            }
+    }
 }

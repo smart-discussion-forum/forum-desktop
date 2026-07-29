@@ -3,6 +3,7 @@ package com.mindshare.group;
 import com.mindshare.discussion.model.Topic;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mindshare.auth.model.UserSession;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -36,13 +37,31 @@ public class GroupDetailController {
     private List<Topic> currentTopics = new ArrayList<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @FXML
+    public void initialize() {
+        applyCreateTopicVisibility();
+    }
+
     public void setGroup(Group group) {
         this.currentGroup = group;
         if (groupNameLabel != null && group != null) {
             groupNameLabel.setText(group.getName());
         }
+        applyCreateTopicVisibility();
         setupTopicListView();
         loadTopics();
+    }
+
+    private void applyCreateTopicVisibility() {
+        if (createTopicButton == null) return;
+        boolean canCreate = canCreateTopics();
+        createTopicButton.setVisible(canCreate);
+        createTopicButton.setManaged(canCreate);
+    }
+
+    private boolean canCreateTopics() {
+        String role = UserSession.getUserRole();
+        return "lecturer".equalsIgnoreCase(role) || "admin".equalsIgnoreCase(role);
     }
 
     private void setupTopicListView() {
@@ -145,6 +164,12 @@ public class GroupDetailController {
     @FXML
     private void handleCreateTopic(ActionEvent event) {
         if (currentGroup == null) return;
+        if (!canCreateTopics()) {
+            if (statusLabel != null) {
+                statusLabel.setText("Only lecturers can create topics.");
+            }
+            return;
+        }
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/group/CreateTopicView.fxml"));
