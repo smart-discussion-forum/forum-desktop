@@ -88,13 +88,17 @@ public class DashboardController {
             }
             groupSelector.setItems(FXCollections.observableArrayList(safeGroups));
             if (!safeGroups.isEmpty()) groupSelector.getSelectionModel().selectFirst();
-            if (safeGroups.isEmpty()) showStatus("No groups yet. Create a group on the web app first, then you can add topics and view participation.");
+            if (safeGroups.isEmpty()) showStatus("No groups yet. Use + New group to create one.");
         }
     }
 
     @FXML private void handleBrowseGroups(ActionEvent event) { navigate("/com/mindshare/group/BrowseGroupsView.fxml", event); }
     @FXML private void handleNewGroup(ActionEvent event) {
-        showStatus("New groups are currently created in the web app.");
+        if (!lecturer) {
+            showStatus("Only lecturers can create groups.");
+            return;
+        }
+        navigate("/com/mindshare/group/CreateGroupView.fxml", event);
     }
     @FXML private void handleGroupChat(ActionEvent event) { navigate("/com/mindshare/group/MyGroupsView.fxml", event); }
     @FXML private void handleQuiz(ActionEvent event) { navigate("/com/mindshare/quiz/QuizListView.fxml", event); }
@@ -105,6 +109,10 @@ public class DashboardController {
 
     @FXML
     private void handleCreateTopic(ActionEvent event) {
+        if (!lecturer) {
+            showStatus("Only lecturers can create topics.");
+            return;
+        }
         Group group = selectedGroup();
         if (group == null) return;
         try {
