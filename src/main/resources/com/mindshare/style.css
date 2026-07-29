@@ -855,6 +855,18 @@
 .student-dashboard-action:hover { -fx-background-color: linear-gradient(to bottom right, #ffffff, #e8eef6); }
 .dashboard-status { -fx-text-fill: #64748b !important; }
 
+.password-toggle-btn {
+    -fx-background-color: transparent;
+    -fx-effect: none;
+    -fx-padding: 0 10 0 0;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+}
+
+.password-toggle-btn:hover {
+    -fx-opacity: 0.7;
+}
+
 /* --- Lecturer "Student Participation" leaderboard --- */
 .rank-badge {
     -fx-min-width: 32;

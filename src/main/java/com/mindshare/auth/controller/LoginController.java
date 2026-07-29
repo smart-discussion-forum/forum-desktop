@@ -25,6 +25,31 @@ public class LoginController{
     private final AuthService authService = new AuthService();
 
     @FXML
+    private TextField passwordVisibleField;
+
+    @FXML
+    private Button togglePasswordButton;
+
+    @FXML
+    private void initialize() {
+        // Keep both fields in sync as the user types
+        passwordVisibleField.textProperty().bindBidirectional(passwordField.textProperty());
+    }
+
+    @FXML
+    private void handleTogglePasswordVisibility() {
+        boolean willShow = !passwordVisibleField.isVisible();
+
+        passwordVisibleField.setVisible(willShow);
+        passwordVisibleField.setManaged(willShow);
+
+        passwordField.setVisible(!willShow);
+        passwordField.setManaged(!willShow);
+
+        togglePasswordButton.setText(willShow ? "🙈" : "👁");
+    }
+
+    @FXML
     private void handleForgotPassword(ActionEvent event) {
         try {
             javafx.scene.Parent resetRoot = javafx.fxml.FXMLLoader.load(

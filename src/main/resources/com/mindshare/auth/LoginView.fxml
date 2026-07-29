@@ -30,7 +30,12 @@
 
             <VBox spacing="6" maxWidth="320">
                 <Label text="Password:" styleClass="form-field-label"/>
-                <PasswordField fx:id="passwordField" promptText="Password"/>
+                <StackPane maxWidth="320">
+                    <PasswordField fx:id="passwordField" promptText="Password"/>
+                    <TextField fx:id="passwordVisibleField" promptText="Password" visible="false" managed="false"/>
+                    <Button fx:id="togglePasswordButton" text="👁" onAction="#handleTogglePasswordVisibility"
+                            styleClass="password-toggle-btn" StackPane.alignment="CENTER_RIGHT"/>
+                </StackPane>
             </VBox>
 
             <HBox alignment="CENTER_RIGHT" maxWidth="320">
