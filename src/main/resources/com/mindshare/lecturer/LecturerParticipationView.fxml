@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_LEFT" spacing="18" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml" fx:controller="com.mindshare.lecturer.LecturerParticipationController">
+    <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+    <HBox spacing="16" alignment="CENTER_LEFT">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label fx:id="eyebrowLabel" text="STUDENT PARTICIPATION" styleClass="eyebrow-label"/>
+            <Label fx:id="groupNameLabel" styleClass="screen-title" style="-fx-font-size: 26px;"/>
+            <Label fx:id="subtitleLabel" styleClass="group-card-subtitle" wrapText="true"/>
+        </VBox>
+        <Button fx:id="backButton" text="Back" onAction="#handleBack"/>
+    </HBox>
+
+    <Label fx:id="statusLabel" styleClass="admin-status"/>
+
+    <HBox fx:id="statsRowTop" spacing="12"/>
+    <HBox fx:id="statsRowBottom" spacing="12"/>
+
+    <HBox fx:id="sortTabsRow" spacing="10" alignment="CENTER_LEFT">
+        <ToggleButton fx:id="sortScoreTab" text="Score" styleClass="sort-tab"/>
+        <ToggleButton fx:id="sortPostsTab" text="Posts" styleClass="sort-tab"/>
+        <ToggleButton fx:id="sortNameTab" text="Name" styleClass="sort-tab"/>
+        <ToggleButton fx:id="sortActivityTab" text="Activity" styleClass="sort-tab"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" prefHeight="440" prefWidth="1100" VBox.vgrow="ALWAYS">
+        <VBox fx:id="leaderboardContainer" spacing="16"/>
+    </ScrollPane>
+</VBox>

@@ -43,7 +43,6 @@
                 </Label>
 
                 <FlowPane fx:id="studentActions" hgap="16" vgap="16" prefWrapLength="850">
-                    <Button text="Groups" onAction="#handleBrowseGroups" styleClass="dashboard-action-button,student-dashboard-action"/>
                     <Button fx:id="groupChatButton" text="Group Chat" onAction="#handleGroupChat" styleClass="dashboard-action-button,student-dashboard-action"/>
                     <Button fx:id="quizButton" text="Quizzes" onAction="#handleQuiz" styleClass="dashboard-action-button,student-dashboard-action"/>
                     <Button fx:id="recommendationsButton" text="Recommendations" onAction="#handleRecommendations" styleClass="dashboard-action-button,student-dashboard-action"/>

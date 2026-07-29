@@ -24,7 +24,6 @@ import java.util.List;
 public class ChatController {
 
     @FXML private ListView<Group> groupsListView;
-    @FXML private Button browseGroupsButton;
     @FXML private Button backButton;
     @FXML private Label activeGroupLabel;
     @FXML private Button topicsButton;
@@ -310,18 +309,6 @@ public class ChatController {
             controller.setGroup(selectedGroup);
 
             Stage stage = (Stage) topicsButton.getScene().getWindow();
-            com.mindshare.utils.SceneUtils.switchScene(stage, root);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleBrowseGroups(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mindshare/group/BrowseGroupsView.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) browseGroupsButton.getScene().getWindow();
             com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();

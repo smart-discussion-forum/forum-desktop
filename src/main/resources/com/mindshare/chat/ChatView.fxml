@@ -22,10 +22,6 @@
                 <!-- List of Joined Groups -->
                 <ListView fx:id="groupsListView" VBox.vgrow="ALWAYS" style="-fx-background-radius: 8; -fx-border-color: transparent;" />
 
-                <!-- Browse / Discover Groups Button -->
-                <Button fx:id="browseGroupsButton" text="Browse Groups" onAction="#handleBrowseGroups"
-                        maxWidth="1.7976931348623157E308" style="-fx-background-color: #ffffff; -fx-background-radius: 20; -fx-padding: 10 15; -fx-cursor: hand; -fx-font-weight: bold;" />
-
                 <Button fx:id="backButton" text="← Back to Dashboard" onAction="#handleBack"
                         maxWidth="1.7976931348623157E308" style="-fx-background-color: transparent; -fx-text-fill: #5e6c84; -fx-cursor: hand;" />
             </children>

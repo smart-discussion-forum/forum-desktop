@@ -6,7 +6,7 @@
       styleClass="web-navbar" alignment="CENTER_LEFT" spacing="18">
     <HBox fx:id="navLinks" spacing="18" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
         <Button text="Dashboard" onAction="#handleDashboard" styleClass="nav-link" />
-        <Button text="Groups" onAction="#handleGroups" styleClass="nav-link" />
+        <Button text="Browse Groups" onAction="#handleGroups" styleClass="nav-link" />
         <Button text="Quiz" onAction="#handleQuiz" styleClass="nav-link" />
         <Button text="Recommended" onAction="#handleRecommended" styleClass="nav-link" />
         <Button fx:id="manageUsersButton" text="Manage Users" onAction="#handleManageUsers" styleClass="nav-link" visible="false" managed="false" />
