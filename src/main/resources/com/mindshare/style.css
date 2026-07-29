@@ -840,3 +840,52 @@
 }
 .student-dashboard-action:hover { -fx-background-color: linear-gradient(to bottom right, #ffffff, #e8eef6); }
 .dashboard-status { -fx-text-fill: #64748b !important; }
+
+/* --- Lecturer "Student Participation" leaderboard --- */
+.rank-badge {
+    -fx-min-width: 32;
+    -fx-min-height: 32;
+    -fx-max-width: 32;
+    -fx-max-height: 32;
+    -fx-alignment: center;
+    -fx-background-color: rgba(100, 116, 139, 0.7);
+    -fx-background-radius: 999;
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+}
+
+.rank-badge-gold {
+    -fx-background-color: linear-gradient(to bottom right, #f2b705, #d69e02);
+}
+
+.sort-tab {
+    -fx-background-color: rgba(255, 255, 255, 0.86);
+    -fx-text-fill: #101827;
+    -fx-background-radius: 999;
+    -fx-border-color: rgba(148, 163, 184, 0.28);
+    -fx-border-radius: 999;
+    -fx-padding: 8 20 8 20;
+    -fx-font-weight: 600;
+}
+
+.sort-tab:selected {
+    -fx-background-color: linear-gradient(to bottom right, #4f7ca8, #2f5f84);
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+.participation-progress-bar {
+    -fx-pref-height: 10;
+    -fx-accent: #4f7ca8;
+}
+
+.participation-progress-bar > .track {
+    -fx-background-color: rgba(148, 163, 184, 0.25);
+    -fx-background-radius: 999;
+}
+
+.participation-progress-bar > .bar {
+    -fx-background-color: linear-gradient(to right, #5b8ab5, #2f5f84);
+    -fx-background-radius: 999;
+    -fx-padding: 5;
+}

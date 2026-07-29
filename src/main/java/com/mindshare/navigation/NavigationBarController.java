@@ -32,7 +32,7 @@ public class NavigationBarController {
     @FXML private void handleRecommended(ActionEvent e) { navigate("/com/mindshare/recommendation/RecommendationView.fxml", source(e)); }
     @FXML private void handleManageUsers(ActionEvent e) { navigate("/com/mindshare/admin/AdminDashboardView.fxml", source(e)); }
     @FXML private void handleStatistics(ActionEvent e) { navigate("/com/mindshare/admin/ParticipationStatisticsView.fxml", source(e)); }
-    @FXML private void handleParticipation(ActionEvent e) { navigate("/com/mindshare/admin/ParticipationStatisticsView.fxml", source(e)); }
+    @FXML private void handleParticipation(ActionEvent e) { navigate("/com/mindshare/lecturer/LecturerGroupPickerView.fxml", source(e)); }
 
     private Button source(ActionEvent e) { return (Button) e.getSource(); }
     private void navigate(String path, Button source) {

@@ -99,7 +99,7 @@ public class DashboardController {
     @FXML private void handleQuiz(ActionEvent event) { navigate("/com/mindshare/quiz/QuizListView.fxml", event); }
     @FXML private void handleRecommendations(ActionEvent event) { navigate("/com/mindshare/recommendation/RecommendationView.fxml", event); }
     @FXML private void handleProfile(ActionEvent event) { navigate("/com/mindshare/profile/ProfileView.fxml", event); }
-    @FXML private void handleParticipation(ActionEvent event) { navigate("/com/mindshare/admin/ParticipationStatisticsView.fxml", event); }
+    @FXML private void handleParticipation(ActionEvent event) { navigate("/com/mindshare/lecturer/LecturerGroupPickerView.fxml", event); }
     @FXML private void handleScheduleQuiz(ActionEvent event) { navigate("/com/mindshare/quiz/QuizConfigurationView.fxml", event); }
 
     @FXML
