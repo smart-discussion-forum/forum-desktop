@@ -1,5 +1,6 @@
 package com.mindshare.group;
 
+import com.mindshare.auth.model.UserSession;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,6 +23,16 @@ public class CreateTopicController {
     private Group currentGroup;
     private final com.mindshare.api.GroupTopicService topicService = new com.mindshare.api.GroupTopicService();
 
+    @FXML
+    public void initialize() {
+        if (!canCreateTopics()) {
+            showStatus("Only lecturers can create topics.");
+            saveButton.setDisable(true);
+            titleField.setDisable(true);
+            categoryField.setDisable(true);
+        }
+    }
+
     public void setGroup(Group group) {
         this.currentGroup = group;
         if (titleLabel != null && group != null) {
@@ -32,6 +43,10 @@ public class CreateTopicController {
     @FXML
     private void handleSave(ActionEvent event) {
         if (currentGroup == null) return;
+        if (!canCreateTopics()) {
+            showStatus("Only lecturers can create topics.");
+            return;
+        }
 
         String title = titleField.getText() == null ? "" : titleField.getText().trim();
         String category = categoryField.getText() == null ? "" : categoryField.getText().trim();
@@ -40,6 +55,8 @@ public class CreateTopicController {
             showStatus("Title is required.");
             return;
         }
+
+        saveButton.setDisable(true);
 
         Task<Void> task = new Task<>() {
             @Override
@@ -51,6 +68,7 @@ public class CreateTopicController {
 
         task.setOnSucceeded(e -> goBackToTopics());
         task.setOnFailed(e -> {
+            saveButton.setDisable(false);
             Throwable ex = task.getException();
             showStatus(ex != null && ex.getMessage() != null ? ex.getMessage() : "Could not create topic.");
             if (ex != null) ex.printStackTrace();
@@ -97,10 +115,14 @@ public class CreateTopicController {
         }
     }
 
+    private boolean canCreateTopics() {
+        String role = UserSession.getUserRole();
+        return "lecturer".equalsIgnoreCase(role) || "admin".equalsIgnoreCase(role);
+    }
+
     private void showStatus(String msg) {
         statusLabel.setText(msg);
         statusLabel.setVisible(true);
         statusLabel.setManaged(true);
     }
 }
-
