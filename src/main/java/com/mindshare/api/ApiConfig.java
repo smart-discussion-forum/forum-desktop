@@ -17,6 +17,16 @@ public final class ApiConfig {
         return getBaseUrl();
     }
 
+    /**
+     * The password-reset flow is currently exposed by Laravel's web routes,
+     * whereas the rest of the desktop client uses /api routes.
+     */
+    public static String getWebBaseUrl() {
+        return BASE_URL.endsWith("/api")
+                ? BASE_URL.substring(0, BASE_URL.length() - "/api".length())
+                : BASE_URL;
+    }
+
     private static String resolveBaseUrl() {
         String configured = System.getProperty("mindshare.api.base-url");
         if (configured == null || configured.isBlank()) {
