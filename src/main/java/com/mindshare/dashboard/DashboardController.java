@@ -92,7 +92,6 @@ public class DashboardController {
         }
     }
 
-    @FXML private void handleBrowseGroups(ActionEvent event) { navigate("/com/mindshare/group/BrowseGroupsView.fxml", event); }
     @FXML private void handleNewGroup(ActionEvent event) {
         showStatus("New groups are currently created in the web app.");
     }
