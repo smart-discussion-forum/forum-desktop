@@ -109,6 +109,10 @@ public class DashboardController {
 
     @FXML
     private void handleCreateTopic(ActionEvent event) {
+        if (!lecturer) {
+            showStatus("Only lecturers can create topics.");
+            return;
+        }
         Group group = selectedGroup();
         if (group == null) return;
         try {
