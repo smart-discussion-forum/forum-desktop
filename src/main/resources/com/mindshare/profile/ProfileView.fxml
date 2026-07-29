@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" spacing="18" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.mindshare.profile.ProfileController"
+      styleClass="page-card"
+      maxWidth="860">
+    <padding><Insets top="28" right="28" bottom="28" left="28" /></padding>
+
+    <Label text="Profile" styleClass="screen-title" />
+
+    <HBox spacing="12" alignment="CENTER">
+        <Button fx:id="dashboardButton" text="Dashboard" onAction="#handleBack" />
+        <Button fx:id="chatButton" text="Group Chat" onAction="#handleGroupChat" />
+        <Button fx:id="quizzesButton" text="Quizzes" onAction="#handleQuizzes" />
+    </HBox>
+
+    <VBox spacing="12" styleClass="panel" maxWidth="720" alignment="TOP_LEFT">
+        <padding><Insets top="20" right="22" bottom="20" left="22" /></padding>
+
+        <Label text="Name:" styleClass="form-field-label" />
+        <TextField fx:id="nameField" editable="false" maxWidth="Infinity" />
+
+        <Label text="Email:" styleClass="form-field-label" />
+        <TextField fx:id="emailField" editable="false" maxWidth="Infinity" />
+
+        <Label text="Role:" styleClass="form-field-label" />
+        <TextField fx:id="roleField" editable="false" maxWidth="Infinity" />
+
+        <Label text="Status:" styleClass="form-field-label" />
+        <TextField fx:id="statusField" editable="false" maxWidth="Infinity" />
+
+        <Label fx:id="statusLabel" styleClass="admin-status" />
+
+        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <Button fx:id="refreshButton" text="Refresh" onAction="#handleRefresh" />
+        </HBox>
+    </VBox>
+</VBox>

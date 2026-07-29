@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox alignment="TOP_CENTER" spacing="20" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.mindshare.quiz.QuizOwnerController">
+    <padding><Insets top="24" right="24" bottom="30" left="24" /></padding>
+    <VBox styleClass="page-card" maxWidth="900" spacing="16">
+        <padding><Insets top="26" right="30" bottom="26" left="30" /></padding>
+        <HBox alignment="CENTER_LEFT" spacing="14">
+            <Label fx:id="titleLabel" styleClass="screen-title" HBox.hgrow="ALWAYS" />
+            <Button text="Back to Quizzes" onAction="#handleBack" />
+        </HBox>
+        <Label fx:id="detailsLabel" styleClass="page-subtitle" wrapText="true" />
+        <Label fx:id="questionCountLabel" styleClass="admin-status" />
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Button fx:id="editButton" text="Edit Quiz" onAction="#handleEdit" visible="false" managed="false" />
+            <Button text="View Submissions" onAction="#handleSubmissions" />
+            <Button text="View Answer Key" onAction="#handleAnswerKey" />
+        </HBox>
+        <Label fx:id="statusLabel" styleClass="admin-status" />
+    </VBox>
+</VBox>
