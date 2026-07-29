@@ -31,3 +31,5 @@
     <Label fx:id="statusLabel" style="-fx-text-fill: #067647;" visible="false" wrapText="true" maxWidth="300"/>
     <Button fx:id="loginButton" text="LogIn" onAction="#handleLogin" prefWidth="120"/>
 </VBox>
+    </StackPane>
+</VBox>
