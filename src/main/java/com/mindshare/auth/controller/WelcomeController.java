@@ -3,7 +3,6 @@ package com.mindshare.auth.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -35,39 +34,22 @@ public class WelcomeController {
     }
 
     @FXML
-    private void handleHome(ActionEvent event) {
-        try {
-            Parent welcomeRoot = FXMLLoader.load(getClass().getResource("/com/mindshare/auth/WelcomeView.fxml"));
-            Stage stage = stageFrom(event);
-            com.mindshare.utils.SceneUtils.switchScene(stage, welcomeRoot);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
     private void handleLogin(ActionEvent event) {
-        try {
-            Parent loginRoot = FXMLLoader.load(getClass().getResource("/com/mindshare/auth/LoginView.fxml"));
-            Stage stage = stageFrom(event);
-            com.mindshare.utils.SceneUtils.switchScene(stage, loginRoot);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        navigate("/com/mindshare/auth/LoginView.fxml", loginButton);
     }
 
     @FXML
     private void handleRegister(ActionEvent event) {
+        navigate("/com/mindshare/auth/RegistrationView.fxml", registerButton);
+    }
+
+    private void navigate(String path, Button source) {
         try {
-            Parent registerRoot = FXMLLoader.load(getClass().getResource("/com/mindshare/auth/RegistrationView.fxml"));
-            Stage stage = stageFrom(event);
-            com.mindshare.utils.SceneUtils.switchScene(stage, registerRoot);
+            Parent root = FXMLLoader.load(getClass().getResource(path));
+            Stage stage = (Stage) source.getScene().getWindow();
+            com.mindshare.utils.SceneUtils.switchScene(stage, root);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private Stage stageFrom(ActionEvent event) {
-        return (Stage) ((Node) event.getSource()).getScene().getWindow();
     }
 }
