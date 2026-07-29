@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -14,22 +15,34 @@
     <fx:include source="GuestNavBarView.fxml"/>
 
     <StackPane VBox.vgrow="ALWAYS">
-        <VBox alignment="CENTER" spacing="15" maxWidth="420" styleClass="auth-card">
+        <VBox alignment="CENTER" spacing="16" maxWidth="420" maxHeight="-Infinity" styleClass="auth-card">
             <padding>
                 <Insets top="40" right="40" bottom="40" left="40"/>
             </padding>
 
-            <Label text="LogIn" styleClass="screen-title"/>
+            <Label text="Login" styleClass="screen-title"/>
+            <Label text="Access your discussions, quizzes, and profile." styleClass="auth-card-subtitle" wrapText="true" maxWidth="320"/>
 
-            <TextField fx:id="usernameField" promptText="Email" maxWidth="250"/>
-            <PasswordField fx:id="passwordField" promptText="Password" maxWidth="250"/>
+            <VBox spacing="6" maxWidth="320">
+                <Label text="Email:" styleClass="form-field-label"/>
+                <TextField fx:id="usernameField" promptText="Email"/>
+            </VBox>
 
-     <Button text="Forgot password?" onAction="#handleForgotPassword" maxWidth="250"
-        style="-fx-background-color: transparent; -fx-text-fill: #2f5f84; -fx-effect: none; -fx-padding: 0;"/>
-    
-    <Label fx:id="errorLabel" style="-fx-text-fill: red;" visible="false"/>
-    <Label fx:id="statusLabel" style="-fx-text-fill: #067647;" visible="false" wrapText="true" maxWidth="300"/>
-    <Button fx:id="loginButton" text="LogIn" onAction="#handleLogin" prefWidth="120"/>
-</VBox>
+            <VBox spacing="6" maxWidth="320">
+                <Label text="Password:" styleClass="form-field-label"/>
+                <PasswordField fx:id="passwordField" promptText="Password"/>
+            </VBox>
+
+            <HBox alignment="CENTER_RIGHT" maxWidth="320">
+                <Button text="Forgot Password?" onAction="#handleForgotPassword" styleClass="auth-link-button"/>
+            </HBox>
+
+            <Label fx:id="errorLabel" styleClass="error" visible="false" managed="false" wrapText="true" maxWidth="320"/>
+            <Label fx:id="statusLabel" styleClass="success" visible="false" managed="false" wrapText="true" maxWidth="320"/>
+
+            <HBox alignment="CENTER_RIGHT" maxWidth="320">
+                <Button fx:id="loginButton" text="Login" onAction="#handleLogin" styleClass="auth-submit-button"/>
+            </HBox>
+        </VBox>
     </StackPane>
 </VBox>

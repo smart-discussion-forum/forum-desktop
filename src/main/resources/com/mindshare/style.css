@@ -219,6 +219,20 @@
 .auth-submit-button:hover {
     -fx-background-color: linear-gradient(to bottom right, #5b8ab5, #3a6d94);
 }
+
+.auth-link-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2f5f84;
+    -fx-underline: true;
+    -fx-padding: 4 0 4 0;
+    -fx-effect: none;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.auth-link-button:hover {
+    -fx-text-fill: #3a6d94;
+}
 .glass-card .label,
 .discussion-sidebar .label,
 .discussion-conversation .label,
