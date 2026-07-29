@@ -20,7 +20,10 @@
     <TextField fx:id="usernameField" promptText="Email" maxWidth="250"/>
     <PasswordField fx:id="passwordField" promptText="Password" maxWidth="250"/>
 
+     <Button text="Forgot password?" onAction="#handleForgotPassword" maxWidth="250"
+        style="-fx-background-color: transparent; -fx-text-fill: #2f5f84; -fx-effect: none; -fx-padding: 0;"/>
+    
     <Label fx:id="errorLabel" style="-fx-text-fill: red;" visible="false"/>
-
+    <Label fx:id="statusLabel" style="-fx-text-fill: #067647;" visible="false" wrapText="true" maxWidth="300"/>
     <Button fx:id="loginButton" text="LogIn" onAction="#handleLogin" prefWidth="120"/>
 </VBox>
